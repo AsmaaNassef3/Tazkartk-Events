@@ -1,0 +1,118 @@
+<!-- src/app/shared/components/app-sidebar/app-sidebar.component.html -->
+<nav
+  [class]="
+    'flex h-full flex-col overflow-hidden ' +
+    (collapsed() ? 'gap-1 p-1 pt-4' : 'gap-4 p-4')
+  "
+>
+  <!-- Brand Logo and Text -->
+  <div
+    [class]="
+      'flex items-center gap-2 ' +
+      (collapsed() ? 'justify-center mb-4' : 'px-2 mb-6')
+    "
+  >
+    <img src="/images/Screenshot 2026-04-03 at 9.36.04 PM.png" alt="TAZKARTAK Logo" class="w-8 h-8 shrink-0" />
+    @if (!collapsed()) {
+    <span class="font-bold  fa-1x text-sm text-[#0e2e72]">TAZKARTAK</span>
+    }
+  </div>
+
+  <!-- Theme Toggle -->
+  <!-- <button
+    z-button
+    zType="ghost"
+    class="justify-center"
+    (click)="toggleTheme()"
+    zTooltip="Toggle theme"
+    zPosition="right"
+  >
+    <z-icon [zType]="themeIcon()" />
+  </button> -->
+
+  <!-- Main Menu Group -->
+  <z-sidebar-group>
+    @if (!collapsed()) {
+    <z-sidebar-group-label>Main</z-sidebar-group-label>
+    } @for (item of mainMenuItems; track item.label) {
+    <button
+      type="button"
+      z-button
+      zType="ghost"
+      [class]="
+        collapsed()
+          ? 'justify-center hover:bg-blue-50 hover:text-blue-600'
+          : 'justify-start hover:bg-blue-50 hover:text-blue-600'
+      "
+      [zTooltip]="collapsed() ? item.label : ''"
+      zPosition="right"
+      (click)="navigateTo(item.route!)"
+    >
+      <z-icon [zType]="item.icon" [class]="collapsed() ? '' : 'mr-2'" />
+      @if (!collapsed()) {
+      <span>{{ item.label }}</span>
+      }
+    </button>
+    }
+  </z-sidebar-group>
+
+  <!-- Workspace Menu Group -->
+  <z-sidebar-group>
+    @if (!collapsed()) {
+    <z-sidebar-group-label>Workspace</z-sidebar-group-label>
+    } @for (item of workspaceMenuItems; track item.label) {
+    <button
+      type="button"
+      z-button
+      zType="ghost"
+      [class]="
+        collapsed()
+          ? 'justify-center hover:bg-blue-50 hover:text-blue-600'
+          : 'justify-start hover:bg-blue-50 hover:text-blue-600'
+      "
+      [zTooltip]="collapsed() ? item.label : ''"
+      zPosition="right"
+      (click)="navigateTo(item.route!)"
+    >
+      <z-icon [zType]="item.icon" [class]="collapsed() ? '' : 'mr-2'" />
+      @if (!collapsed()) {
+      <span>{{ item.label }}</span>
+      }
+    </button>
+    }
+  </z-sidebar-group>
+
+  <!-- User Profile -->
+  <div class="mt-auto p-2">
+    <div
+      z-menu
+      [zMenuTriggerFor]="userMenu"
+      zPlacement="rightBottom"
+      class="hover:bg-blue-50 flex cursor-pointer items-center justify-center gap-2 rounded-md p-2"
+    >
+      <!-- Avatar with initials fallback -->
+      <div
+        class="w-8 h-8 rounded-full bg-blue-100 flex items-center justify-center text-blue-600 font-semibold text-sm shrink-0"
+      >
+        {{ orgInitials() }}
+      </div>
+      @if (!collapsed()) {
+      <div class="min-w-0 flex-1">
+        <span class="font-medium block truncate">{{ orgName() }}</span>
+        <div class="text-xs text-muted-foreground truncate">
+          {{ orgEmail() }}
+        </div>
+      </div>
+      <z-icon zType="chevrons-up-down" class="ml-auto shrink-0" />
+      }
+    </div>
+
+    <ng-template #userMenu>
+      <div z-menu-content class="w-48">
+        <button type="button" z-menu-item (click)="logout()">
+          <z-icon zType="log-out" class="mr-2" />Logout
+        </button>
+      </div>
+    </ng-template>
+  </div>
+</nav>

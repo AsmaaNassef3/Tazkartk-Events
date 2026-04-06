@@ -1,0 +1,44 @@
+<!-- src/app/features/dashboard/dashboard.html -->
+<z-layout class="h-screen w-full overflow-hidden">
+  <z-sidebar
+    [zWidth]="250"
+    [zCollapsible]="true"
+    [zCollapsed]="sidebarCollapsed()"
+    [zCollapsedWidth]="70"
+    (zCollapsedChange)="onCollapsedChange($event)"
+    class="p-0!"
+  >
+    <app-sidebar
+      [collapsed]="sidebarCollapsed()"
+      (collapsedChange)="onCollapsedChange($event)"
+    />
+  </z-sidebar>
+
+  <!-- Main Content Area -->
+  <z-content class="h-full p-0">
+    <!-- Header with Breadcrumb -->
+    <div class="flex items-center p-4 border-b">
+      <button
+        type="button"
+        z-button
+        zType="ghost"
+        zSize="sm"
+        class="-ml-2"
+        (click)="toggleSidebar()"
+      >
+        <z-icon zType="panel-left" />
+      </button>
+      <z-divider zOrientation="vertical" class="ml-2 h-4" />
+      <z-breadcrumb zWrap="wrap" zAlign="start">
+        <z-breadcrumb-item>
+          <span aria-current="page">Dashboard</span>
+        </z-breadcrumb-item>
+      </z-breadcrumb>
+    </div>
+
+    <!-- Dynamic Content via Router -->
+    <div class="h-full overflow-auto">
+      <router-outlet />
+    </div>
+  </z-content>
+</z-layout>
