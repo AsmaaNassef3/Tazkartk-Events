@@ -570,13 +570,13 @@ export class TicketTemplateFormComponent implements AfterViewInit {
         font-family: var(--fd);
         font-size: clamp(2rem, 5vw, 3rem);
         letter-spacing: 0.04em;
-        color: var(--text);
+   
         margin: 0;
         line-height: 1;
       }
       .tp-desc {
         font-size: 0.85rem;
-        color: var(--muted);
+        color: gray;
         line-height: 1.65;
         max-width: 380px;
         font-weight: 300;
@@ -616,7 +616,7 @@ export class TicketTemplateFormComponent implements AfterViewInit {
         align-items: center;
         gap: 8px;
         padding: 0.65rem 1.35rem;
-        background: var(--coral);
+        background: #2563eb;
         color: #fff;
         border: none;
         border-radius: 100px;
@@ -625,8 +625,8 @@ export class TicketTemplateFormComponent implements AfterViewInit {
         font-size: 0.85rem;
         letter-spacing: 0.02em;
         cursor: pointer;
-        transition: box-shadow 0.25s, transform 0.18s;
-        box-shadow: 0 4px 16px rgba(37, 99, 235, 0.3);
+        transition: box-shadow 0.25s, transform 0.18s, background 0.18s;
+        box-shadow: 0 4px 16px rgba(37, 99, 235, 0.4);
         position: relative;
         overflow: hidden;
       }
@@ -636,14 +636,15 @@ export class TicketTemplateFormComponent implements AfterViewInit {
         inset: 0;
         background: linear-gradient(
           135deg,
-          rgba(255, 255, 255, 0.13) 0%,
+          rgba(255, 255, 255, 0.15) 0%,
           transparent 55%
         );
         pointer-events: none;
       }
       .tp-btn-new:hover {
-        box-shadow: 0 8px 28px rgba(37, 99, 235, 0.45);
-        transform: translateY(-1px);
+        box-shadow: 0 10px 40px rgba(37, 99, 235, 0.6);
+        transform: translateY(-2px);
+        background: #1e40af;
       }
       .tp-btn-new .i {
         width: 15px;
@@ -751,7 +752,7 @@ export class TicketTemplateFormComponent implements AfterViewInit {
       .tp-empty__icon {
         width: 28px;
         height: 28px;
-        color: var(--muted);
+        color: #6b7280;
       }
       .tp-empty__title {
         font-family: var(--fd);
@@ -762,7 +763,7 @@ export class TicketTemplateFormComponent implements AfterViewInit {
       }
       .tp-empty__desc {
         font-size: 0.85rem;
-        color: var(--muted);
+        color: #4b5563;
         max-width: 280px;
         line-height: 1.65;
         margin: 0;
@@ -847,7 +848,7 @@ export class TicketTemplateFormComponent implements AfterViewInit {
         border: none;
         border-radius: 8px;
         cursor: pointer;
-        color: var(--muted);
+        color: #6b7280;
         transition: background 0.18s, color 0.18s;
       }
       .tp-action-btn:hover {
@@ -875,7 +876,7 @@ export class TicketTemplateFormComponent implements AfterViewInit {
       .tp-del-confirm__label {
         font-size: 0.67rem;
         font-weight: 600;
-        color: var(--coral);
+        color: #dc2626;
         margin-right: 2px;
       }
 
@@ -900,7 +901,7 @@ export class TicketTemplateFormComponent implements AfterViewInit {
       }
       .tp-card__desc {
         font-size: 0.78rem;
-        color: var(--muted);
+        color: gray;
         line-height: 1.6;
         margin: 0;
         display: -webkit-box;
@@ -926,7 +927,7 @@ export class TicketTemplateFormComponent implements AfterViewInit {
         font-size: 0.63rem;
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        color: var(--muted);
+        color: gray;
       }
       .tp-card__foot-lbl .i {
         width: 12px;
@@ -988,10 +989,18 @@ export class TicketTemplateFormComponent implements AfterViewInit {
         <div class="tp-header">
           <div class="tp-header__left">
             <div class="tp-kicker">
-              <span class="tp-kicker__dot"></span>
+              <span class="tp-kicker__dot text-blue-900"></span>
               Ticket Management
             </div>
-            <h1 class="tp-title">Templates</h1>
+            <h1
+                style="font-family:'Bebas Neue',sans-serif;font-size:clamp(2.8rem,11vw,7rem);line-height:.88;letter-spacing:.03em;color:var(--text-900);margin:0"
+              >
+                YOUR<br />
+                <span
+                  style="color:transparent;-webkit-text-stroke:2px var(--primary)"
+                  >templates</span
+                >
+              </h1>
             <p class="tp-desc">
               Define reusable ticket types — set tier, pricing, and description
               once, attach anywhere.

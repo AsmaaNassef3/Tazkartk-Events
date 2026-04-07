@@ -225,7 +225,7 @@ type ViewState =
           >
             Verify <span class="text-[#2563EB]">Ticket</span>
           </h1>
-          <p class="text-[.85rem] text-slate-400 font-light m-0">
+          <p class="text-[.85rem] text-slate-700 font-light m-0">
             Scan a QR code with your camera or enter a UUID manually.
           </p>
         </div>
@@ -240,7 +240,7 @@ type ViewState =
             [class]="
               mode() === 'manual'
                 ? 'bg-[#EEF2FF] border border-[#2563EB]/20 text-[#1E3A5F]'
-                : 'text-slate-400 hover:text-slate-600'
+                : 'text-slate-700 hover:text-slate-900'
             "
             (click)="setMode('manual')"
           >
@@ -266,7 +266,7 @@ type ViewState =
             [class]="
               mode() === 'scan'
                 ? 'bg-[#EEF2FF] border border-[#2563EB]/20 text-[#1E3A5F]'
-                : 'text-slate-400 hover:text-slate-600'
+                : 'text-slate-700 hover:text-slate-900'
             "
             (click)="setMode('scan')"
           >
@@ -323,7 +323,7 @@ type ViewState =
               <p class="text-[.88rem] font-bold text-[#1E3A5F] mb-0.5">
                 Ticket UUID
               </p>
-              <p class="font-mono text-[.6rem] tracking-[.06em] text-slate-400">
+              <p class="font-mono text-[.6rem] tracking-[.06em] text-slate-600">
                 e.g. f0f0bf50-b49f-4123-a7f2-5e912d87c732
               </p>
             </div>
@@ -336,7 +336,7 @@ type ViewState =
                      px-4 py-3 outline-none transition-all duration-200
                      placeholder:text-slate-400
                      focus:border-[#2563EB]/50 focus:shadow-[0_0_0_3px_rgba(37,99,235,.08)]"
-              [class]="inputErr() ? 'border-red-500/50' : 'border-[#E2E8F0]'"
+              [class]="inputErr() ? 'border-red-600/70' : 'border-[#E2E8F0]'"
               type="text"
               [(ngModel)]="codeInput"
               (ngModelChange)="onInput()"
@@ -383,7 +383,7 @@ type ViewState =
           </div>
 
           @if (inputErr()) {
-          <p class="flex items-center gap-1.5 text-[.72rem] text-red-400 -mt-1">
+          <p class="flex items-center gap-1.5 text-[.72rem] text-red-600 -mt-1">
             <svg
               class="w-3 h-3 shrink-0"
               fill="none"
@@ -413,7 +413,7 @@ type ViewState =
                         bg-red-500/6 border border-red-500/20"
           >
             <svg
-              class="w-5 h-5 text-red-400 shrink-0 mt-0.5"
+              class="w-5 h-5 text-red-600 shrink-0 mt-0.5"
               fill="none"
               stroke="currentColor"
               stroke-width="1.5"
@@ -428,10 +428,10 @@ type ViewState =
               />
             </svg>
             <div>
-              <p class="text-[.84rem] font-semibold text-red-400">
+              <p class="text-[.84rem] font-semibold text-red-600">
                 Camera unavailable
               </p>
-              <p class="text-[.76rem] text-slate-500 mt-0.5">
+              <p class="text-[.76rem] text-slate-600 mt-0.5">
                 {{ camErr() }} — use Manual mode.
               </p>
             </div>
@@ -443,7 +443,7 @@ type ViewState =
           <div class="flex flex-col gap-3">
             <!-- Scan area -->
             <div
-              class="relative w-full overflow-hidden rounded-2xl bg-[#1E3A5F] border border-[#E2E8F0]"
+              class="relative w-full overflow-hidden rounded-2xl bg-white border border-[#E2E8F0]"
               style="aspect-ratio:1/1;max-height:320px"
             >
               <!-- Video always present in DOM -->
@@ -458,14 +458,14 @@ type ViewState =
               <!-- Init spinner while camera warms up -->
               @if (state() === 'idle') {
               <div
-                class="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-[#1E3A5F]"
+                class="absolute inset-0 flex flex-col items-center justify-center gap-3 bg-white"
               >
                 <span
                   class="w-10 h-10 rounded-full border-[3px] border-white/10 border-t-[#2563EB]
                                  animate-spin"
                 ></span>
                 <span
-                  class="font-mono text-[.62rem] tracking-[.14em] uppercase text-slate-400"
+                  class="font-mono text-[.62rem] tracking-[.14em] uppercase text-slate-600"
                 >
                   Starting camera…
                 </span>
@@ -476,7 +476,7 @@ type ViewState =
               @if (state() === 'scanning') {
               <div
                 class="absolute inset-0 pointer-events-none"
-                style="background:radial-gradient(ellipse 55% 55% at 50% 50%,transparent 36%,rgba(30,58,95,.15) 100%)"
+                style="background:radial-gradient(ellipse 55% 55% at 50% 50%,transparent 36%,rgba(37,99,235,.08) 100%)"
               ></div>
               <div class="absolute pointer-events-none" style="inset:15%">
                 <span class="corner corner--tl"></span>
@@ -490,7 +490,7 @@ type ViewState =
               >
                 <span
                   class="font-mono text-[.6rem] tracking-[.14em] uppercase
-                                 px-3 py-1 rounded-full bg-[#1E3A5F]/65 text-white/55
+                                 px-3 py-1 rounded-full bg-white/95 text-[#2563EB]
                                  border border-[#2563EB]/30"
                 >
                   Hold steady — auto-scanning
@@ -540,7 +540,7 @@ type ViewState =
                   Scanning…
                 </p>
                 <p
-                  class="font-mono text-[.6rem] tracking-wide text-slate-400 mt-0.5"
+                  class="font-mono text-[.6rem] tracking-wide text-slate-600 mt-0.5"
                 >
                   Point camera at the QR code
                 </p>
@@ -561,7 +561,7 @@ type ViewState =
             @if (cameras().length > 1) {
             <div class="flex items-center gap-3">
               <span
-                class="font-mono text-[.6rem] tracking-[.1em] uppercase text-slate-400 shrink-0"
+                class="font-mono text-[.6rem] tracking-[.1em] uppercase text-slate-600 shrink-0"
               >
                 Camera
               </span>
@@ -594,7 +594,7 @@ type ViewState =
                 Verifying with server…
               </p>
               <p
-                class="font-mono text-[.6rem] tracking-wide text-slate-400 mt-0.5 truncate max-w-[260px]"
+                class="font-mono text-[.6rem] tracking-wide text-slate-600 mt-0.5 truncate max-w-[260px]"
               >
                 {{ lastCode() }}
               </p>
@@ -833,7 +833,7 @@ type ViewState =
           >
             <div class="flex justify-between gap-3 flex-wrap">
               <span
-                class="font-mono text-[.6rem] tracking-[.12em] uppercase text-slate-400"
+                class="font-mono text-[.6rem] tracking-[.12em] uppercase text-slate-600"
                 >Used at</span
               >
               <span
@@ -844,7 +844,7 @@ type ViewState =
             @if (result()!.eventTicket?.event?.title) {
             <div class="flex justify-between gap-3 flex-wrap">
               <span
-                class="font-mono text-[.6rem] tracking-[.12em] uppercase text-slate-400"
+                class="font-mono text-[.6rem] tracking-[.12em] uppercase text-slate-600"
                 >Event</span
               >
               <span
@@ -909,7 +909,7 @@ type ViewState =
           </p>
           <div class="flex justify-between gap-3 flex-wrap">
             <span
-              class="font-mono text-[.6rem] tracking-[.12em] uppercase text-slate-400"
+              class="font-mono text-[.6rem] tracking-[.12em] uppercase text-slate-600"
               >Checked code</span
             >
             <code
@@ -960,7 +960,7 @@ type ViewState =
           <p class="text-[.88rem] font-semibold text-[#1E3A5F] m-0">
             Valid ticket — but the event is outside its active window.
           </p>
-          <p class="text-[.82rem] text-indigo-400/80 m-0">{{ errMsg() }}</p>
+          <p class="text-[.82rem] text-slate-600 m-0">{{ errMsg() }}</p>
           <button
             class="inline-flex items-center gap-2 w-fit px-4 py-2 rounded-[9px]
                          bg-transparent border border-indigo-400/35 text-indigo-400
