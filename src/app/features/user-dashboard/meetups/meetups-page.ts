@@ -454,7 +454,7 @@ interface CreateMeetupForm {
       <!-- ── CREATE MEETUP MODAL ── -->
       @if (showCreateModal()) {
       <div
-        class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4 overflow-y-auto"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-white/50 p-4 overflow-y-auto"
         (click)="closeCreateModal()"
       >
         <div

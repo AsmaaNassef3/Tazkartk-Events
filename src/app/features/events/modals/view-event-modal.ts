@@ -139,7 +139,7 @@ import {
   template: `
     <div
       class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6 backdrop-in"
-      style="background:rgba(13,35,82,.12);backdrop-filter:blur(20px)"
+      style="background:rgba(226,232,240,.55);backdrop-filter:blur(20px)"
       (click)="onClose()"
     >
       <div

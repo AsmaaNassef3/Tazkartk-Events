@@ -248,7 +248,7 @@ interface TierOption {
       .ttf-label {
         font-size: 0.78rem;
         font-weight: 600;
-        color: rgba(242, 238, 230, 0.72);
+        color: #1e3a5f;
         letter-spacing: 0.02em;
         font-family: var(--es-fb);
       }
@@ -258,7 +258,7 @@ interface TierOption {
 
       .ttf-input {
         background: var(--es-bg2) !important;
-        border: 1px solid var(--es-border) !important;
+        border: 1.5px solid var(--es-border) !important;
         border-radius: 10px !important;
         color: var(--es-text) !important;
         font-family: var(--es-fb) !important;
@@ -269,8 +269,8 @@ interface TierOption {
         width: 100%;
       }
       .ttf-input:focus {
-        border-color: rgba(255, 68, 51, 0.45) !important;
-        box-shadow: 0 0 0 3px rgba(255, 68, 51, 0.07) !important;
+        border-color: var(--es-coral) !important;
+        box-shadow: 0 0 0 3px var(--es-coral-dim) !important;
       }
       .ttf-input::placeholder {
         color: var(--es-muted) !important;
@@ -304,12 +304,13 @@ interface TierOption {
         align-items: center;
         gap: 6px;
         font-size: 0.72rem;
-        color: var(--es-coral);
+        color: #dc2626;
         font-weight: 500;
       }
       .ttf-icon-xs {
         width: 12px;
         height: 12px;
+        color: #dc2626;
       }
       .ttf-icon-sm {
         width: 16px;
@@ -329,14 +330,14 @@ interface TierOption {
         gap: 0.5rem;
         padding: 0.9rem 0.5rem;
         background: var(--es-bg2);
-        border: 1px solid var(--es-border);
+        border: 1.5px solid var(--es-border);
         border-radius: 12px;
         cursor: pointer;
         font-family: var(--es-fb);
         transition: border-color 0.2s, background 0.2s, transform 0.15s;
       }
       .ttf-tier-btn:hover {
-        border-color: rgba(242, 238, 230, 0.16);
+        border-color: var(--es-border-hi);
         transform: translateY(-1px);
       }
       .ttf-tier-btn--active {
@@ -344,14 +345,14 @@ interface TierOption {
         background: var(--t-dim) !important;
       }
       .ttf-tier-icon {
-        width: 18px;
-        height: 18px;
-        color: var(--es-muted);
+        width: 20px;
+        height: 20px;
+        color: #64748b;
       }
       .ttf-tier-label {
         font-size: 0.7rem;
         font-weight: 700;
-        color: var(--es-muted);
+        color: #1e3a5f;
         letter-spacing: 0.06em;
         text-transform: uppercase;
       }
@@ -370,7 +371,7 @@ interface TierOption {
         gap: 0.75rem;
         padding: 0.85rem 1rem;
         background: var(--es-bg2);
-        border: 1px solid var(--es-border);
+        border: 1.5px solid var(--es-border);
         border-radius: 10px;
       }
       .ttf-tier-locked__name {
@@ -467,21 +468,21 @@ export class TicketTemplateFormComponent implements AfterViewInit {
   styles: [
     `
       :host {
-        --bg: #ffffff;
-        --bg2: #f8faff;
-        --bg3: #eef2ff;
-        --coral: #2563eb;
-        --coral-dim: rgba(37, 99, 235, 0.08);
-        --gold: #f59e0b;
-        --gold-dim: rgba(245, 158, 11, 0.1);
-        --gold-brd: rgba(245, 158, 11, 0.25);
-        --text: #1e3a5f;
-        --muted: #64748b;
-        --border: #e2e8f0;
-        --border-hi: #cbd5e1;
-        --fd: 'Poppins', sans-serif;
-        --fb: 'Plus Jakarta Sans', sans-serif;
-        --fm: 'DM Mono', monospace;
+        --es-bg: #ffffff;
+        --es-bg2: #f8faff;
+        --es-bg3: #eef2ff;
+        --es-coral: #2563eb;
+        --es-coral-dim: rgba(37, 99, 235, 0.08);
+        --es-gold: #f59e0b;
+        --es-gold-dim: rgba(245, 158, 11, 0.1);
+        --es-gold-brd: rgba(245, 158, 11, 0.25);
+        --es-text: #1e3a5f;
+        --es-muted: #64748b;
+        --es-border: #e2e8f0;
+        --es-border-hi: #cbd5e1;
+        --es-fd: 'Poppins', sans-serif;
+        --es-fb: 'Plus Jakarta Sans', sans-serif;
+        --es-fm: 'DM Mono', monospace;
         display: block;
       }
 

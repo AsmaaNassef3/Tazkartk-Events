@@ -135,7 +135,7 @@ import {
   template: `
     <div
       class="fixed inset-0 z-50 flex items-end sm:items-center justify-center p-0 sm:p-6"
-      style="background:rgba(0,0,0,.2);backdrop-filter:blur(8px)"
+      style="background:rgba(255,255,255,.2);backdrop-filter:blur(8px)"
       (click)="onClose()"
     >
       <div

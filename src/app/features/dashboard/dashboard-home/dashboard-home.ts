@@ -1725,11 +1725,11 @@ export class DashboardHomeComponent implements OnInit {
 
   getGradient(e: EventModel): string {
     const g = [
-      'background:linear-gradient(160deg,#1a0800 0%,#2d1200 100%)',
-      'background:linear-gradient(160deg,#060616 0%,#18082e 100%)',
-      'background:linear-gradient(160deg,#001508 0%,#002814 100%)',
-      'background:linear-gradient(160deg,#100012 0%,#200028 100%)',
-      'background:linear-gradient(160deg,#141200 0%,#282200 100%)',
+      'background:linear-gradient(160deg,#fef2f2 0%,#fce7e7 100%)',
+      'background:linear-gradient(160deg,#f3f0ff 0%,#ede9fe 100%)',
+      'background:linear-gradient(160deg,#f0fdf4 0%,#dcedc8 100%)',
+      'background:linear-gradient(160deg,#faf5ff 0%,#f3e8ff 100%)',
+      'background:linear-gradient(160deg,#fffbeb 0%,#fef3c7 100%)',
     ];
     return g[e.id % g.length];
   }

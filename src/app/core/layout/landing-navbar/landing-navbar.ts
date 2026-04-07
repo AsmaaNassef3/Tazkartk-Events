@@ -90,7 +90,7 @@ import { AuthDialog } from '@features/auth/auth-dialog/auth-dialog';
 
       .es-nav__logo-img {
         width: 40px;
-        height: 35px;   
+        height: 35px;
         object-fit: contain;
         flex-shrink: 0;
       }
