@@ -303,14 +303,7 @@ interface Step {
                 Events in<br /><em>Egypt Right Now</em>
               </h2>
             </div>
-            <a
-              href="#"
-              class="es-section-link es-reveal"
-              aria-label="See all events"
-            >
-              See all events
-              <fa-icon [icon]="faArrowRight" aria-hidden="true"></fa-icon>
-            </a>
+        
           </div>
           <div class="es-bento" role="list">
             <article
@@ -619,7 +612,7 @@ interface Step {
         <div class="max-w-screen-xl mx-auto px-5 sm:px-8 lg:px-12">
           <div class="es-footer__top">
             <div>
-              <span class="es-footer__logo">Eventsora</span>
+              <span class="es-footer__logo">Tazkartk</span>
               <p class="es-footer__tagline">Egypt's Premier Events Platform</p>
             </div>
             <nav class="es-footer__nav" aria-label="Footer navigation">
@@ -1616,20 +1609,18 @@ interface Step {
       /* ── NEARBY ── */
       .es-nearby {
         position: relative;
-        min-height: 100svh;
         background: var(--bg2);
         border-top: 1px solid var(--border);
         border-bottom: 1px solid var(--border);
         display: flex;
         flex-direction: column;
-        justify-content: center;
         overflow: hidden;
+        padding: 3rem clamp(1.25rem, 5vw, 3rem);
       }
       .es-nearby__head {
-        position: absolute;
-        top: 3rem;
-        left: clamp(1.25rem, 5vw, 3rem);
+        position: relative;
         z-index: 10;
+        margin-bottom: 2rem;
       }
       .es-nearby__h2 {
         font-family: var(--fd);

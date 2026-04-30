@@ -50,33 +50,33 @@ interface TierCfg {
 const TIERS: Record<number, TierCfg> = {
   0: {
     label: 'Standard',
-    accent: '#64748b',
-    bg: 'bg-slate-500/8',
+    accent: '#6B7280',
+    bg: 'bg-slate-500/6',
     border: 'border-slate-400/35',
-    text: 'text-slate-600',
-    stripeBg: '#64748b',
+    text: 'text-slate-700',
+    stripeBg: '#6B7280',
     gradient:
-      'linear-gradient(135deg, rgba(100,116,139,.16) 0%, rgba(100,116,139,.08) 100%)',
+      'linear-gradient(135deg, rgba(107,127,160,.12) 0%, rgba(107,127,160,.06) 100%)',
   },
   1: {
     label: 'VIP',
-    accent: '#f59e0b',
-    bg: 'bg-amber-400/12',
-    border: 'border-amber-400/45',
-    text: 'text-amber-600',
-    stripeBg: '#f59e0b',
+    accent: '#F59E0B',
+    bg: 'bg-amber-500/8',
+    border: 'border-amber-400/40',
+    text: 'text-amber-700',
+    stripeBg: '#F59E0B',
     gradient:
-      'linear-gradient(135deg, rgba(245,158,11,.16) 0%, rgba(251,191,36,.08) 100%)',
+      'linear-gradient(135deg, rgba(245,158,11,.14) 0%, rgba(217,119,6,.08) 100%)',
   },
   2: {
     label: 'Premium',
-    accent: '#8b5cf6',
-    bg: 'bg-violet-500/10',
-    border: 'border-violet-400/45',
-    text: 'text-violet-600',
-    stripeBg: '#8b5cf6',
+    accent: '#3B82F6',
+    bg: 'bg-blue-500/8',
+    border: 'border-blue-400/40',
+    text: 'text-blue-700',
+    stripeBg: '#3B82F6',
     gradient:
-      'linear-gradient(135deg, rgba(139,92,246,.16) 0%, rgba(168,85,247,.08) 100%)',
+      'linear-gradient(135deg, rgba(59,130,246,.14) 0%, rgba(37,99,235,.08) 100%)',
   },
 };
 
@@ -308,55 +308,47 @@ function qrImgUrl(payload: string): string {
           </button>
         </div>
         } @else {
-        <div class="flex flex-col gap-3">
+        <div class="flex flex-col gap-3.5">
           @for (b of bookings(); track b.ticketUniqueCode; let i = $index) {
 
           <div
             class="animate-slide-up relative overflow-hidden rounded-2xl
-                           bg-white border border-[#E2E8F0]
-                           transition-all duration-200 hover:border-blue-300 hover:shadow-lg"
-            style="box-shadow: 0 1px 3px rgba(13,35,82,.08)"
+                           bg-white border border-[#E5E7EB]
+                           transition-all duration-250 hover:border-blue-300 hover:shadow-md"
+            style="box-shadow: 0 1px 3px rgba(13,35,82,.06)"
             [style.animation-delay]="i * 50 + 'ms'"
           >
-            <!-- Tier stripe with gradient -->
-            <div class="h-1 w-full" [style.background]="tc(b).stripeBg"></div>
+            <!-- Tier stripe with better colors -->
+            <div class="h-1.5 w-full" [style.background]="tc(b).stripeBg"></div>
 
-            <div class="flex items-stretch px-4 py-3.5">
+            <div class="flex items-stretch px-5 py-4">
               <!-- Left info -->
-              <div class="flex-1 min-w-0 flex flex-col gap-2">
-                <!-- Tier badge with gradient -->
+              <div class="flex-1 min-w-0 flex flex-col gap-2.5">
+                <!-- Tier badge with improved styling -->
                 <div
-                  class="inline-flex items-center gap-1.5 w-fit px-2 py-0.5 rounded-md border
-                                font-mono text-[.58rem] tracking-[.1em] uppercase font-bold"
+                  class="inline-flex items-center gap-1.5 w-fit px-2.5 py-1 rounded-lg border
+                                font-mono text-[.59rem] tracking-[.1em] uppercase font-bold"
                   [class]="tc(b).bg + ' ' + tc(b).border + ' ' + tc(b).text"
                   [style.background]="tc(b).gradient"
                 >
                   @switch (b.tier) { @case (1) {
                   <svg
                     class="w-3.5 h-3.5"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2.2"
+                    fill="currentColor"
                     viewBox="0 0 24 24"
                   >
                     <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M13 10V3L4 14h7v7l9-11h-7z"
+                      d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
                     />
                   </svg>
                   } @case (2) {
                   <svg
                     class="w-3.5 h-3.5"
-                    fill="none"
-                    stroke="currentColor"
-                    stroke-width="2.2"
+                    fill="currentColor"
                     viewBox="0 0 24 24"
                   >
                     <path
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      d="M9 12l2 2 4-4M7.835 4.697a3.42 3.42 0 001.946-.806 3.42 3.42 0 014.438 0 3.42 3.42 0 001.946.806 3.42 3.42 0 013.138 3.138 3.42 3.42 0 00.806 1.946 3.42 3.42 0 010 4.438 3.42 3.42 0 00-.806 1.946 3.42 3.42 0 01-3.138 3.138 3.42 3.42 0 00-1.946.806 3.42 3.42 0 01-4.438 0 3.42 3.42 0 00-1.946-.806 3.42 3.42 0 01-3.138-3.138 3.42 3.42 0 00-.806-1.946 3.42 3.42 0 010-4.438 3.42 3.42 0 00.806-1.946 3.42 3.42 0 013.138-3.138z"
+                      d="M12 2l3.09 6.26L22 9.27l-5 4.87 1.18 6.88L12 17.77l-6.18 3.25L7 14.14 2 9.27l6.91-1.01L12 2z"
                     />
                   </svg>
                   } @default {
@@ -364,7 +356,7 @@ function qrImgUrl(payload: string): string {
                     class="w-3.5 h-3.5"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="2.2"
+                    stroke-width="2"
                     viewBox="0 0 24 24"
                   >
                     <path
@@ -379,18 +371,18 @@ function qrImgUrl(payload: string): string {
 
                 <h3
                   class="font-bebas truncate text-[#0d2352] leading-tight font-bold"
-                  style="font-size:1.15rem;letter-spacing:.03em"
+                  style="font-size:1.2rem;letter-spacing:.03em"
                 >
                   {{ b.eventName }}
                 </h3>
 
-                <div class="flex flex-wrap items-center gap-x-3 gap-y-1">
+                <div class="flex flex-wrap items-center gap-x-4 gap-y-1.5">
                   @if (b.eventDate) {
                   <span
-                    class="flex items-center gap-1 text-[.7rem] text-slate-600 font-medium"
+                    class="flex items-center gap-1.5 text-[.73rem] text-slate-700 font-medium"
                   >
                     <svg
-                      class="w-3.5 h-3.5 shrink-0 text-blue-500"
+                      class="w-4 h-4 shrink-0 text-blue-500"
                       fill="none"
                       stroke="currentColor"
                       stroke-width="2"
@@ -406,10 +398,10 @@ function qrImgUrl(payload: string): string {
                   </span>
                   } @if (b.city) {
                   <span
-                    class="flex items-center gap-1 text-[.7rem] text-slate-600 font-medium"
+                    class="flex items-center gap-1.5 text-[.73rem] text-slate-700 font-medium"
                   >
                     <svg
-                      class="w-3.5 h-3.5 shrink-0 text-green-500"
+                      class="w-4 h-4 shrink-0 text-green-500"
                       fill="none"
                       stroke="currentColor"
                       stroke-width="2"
@@ -430,10 +422,10 @@ function qrImgUrl(payload: string): string {
                   </span>
                   } @if (b.online_url && !b.city) {
                   <span
-                    class="flex items-center gap-1 text-[.7rem] text-blue-600 font-medium"
+                    class="flex items-center gap-1.5 text-[.73rem] text-blue-700 font-medium"
                   >
                     <svg
-                      class="w-3.5 h-3.5 shrink-0 text-blue-500"
+                      class="w-4 h-4 shrink-0 text-blue-500"
                       fill="none"
                       stroke="currentColor"
                       stroke-width="2"
@@ -445,15 +437,15 @@ function qrImgUrl(payload: string): string {
                         d="M13.828 10.172a4 4 0 00-5.656 0l-4 4a4 4 0 105.656 5.656l1.102-1.101m-.758-4.899a4 4 0 005.656 0l4-4a4 4 0 00-5.656-5.656l-1.1 1.1"
                       />
                     </svg>
-                    Online
+                    Online Event
                   </span>
                   }
                 </div>
 
                 <div
-                  class="font-mono text-[.65rem] tracking-[.06em] text-slate-500 font-medium"
+                  class="font-mono text-[.66rem] tracking-[.05em] text-slate-500 font-medium mt-1"
                 >
-                  {{ b.attendeeName }}
+                  Name: {{ b.attendeeName }}
                 </div>
               </div>
 
@@ -462,32 +454,30 @@ function qrImgUrl(payload: string): string {
 
               <!-- Right: price + QR button -->
               <div
-                class="flex flex-col items-end justify-between gap-2 shrink-0"
+                class="flex flex-col items-end justify-between gap-3 shrink-0"
               >
                 <div class="text-right">
                   <div
-                    class="font-mono text-[.52rem] tracking-[.14em] uppercase text-slate-500 mb-0.5 font-bold"
+                    class="font-mono text-[.54rem] tracking-[.13em] uppercase text-slate-500 mb-1 font-bold"
                   >
-                    Price paid
+                    Price
                   </div>
                   @if (b.pricePaid === 0) {
                   <div
-                    class="font-bebas leading-none font-bold"
-                    [class]="tc(b).text"
-                    style="font-size:1.3rem;letter-spacing:.04em"
+                    class="font-bebas leading-none font-bold text-blue-700"
+                    style="font-size:1.35rem;letter-spacing:.04em"
                   >
                     FREE
                   </div>
                   } @else {
                   <div class="leading-none flex items-baseline gap-0.5">
                     <span
-                      class="font-mono text-[.6rem] text-slate-600 font-bold"
+                      class="font-mono text-[.62rem] text-slate-600 font-bold"
                       >EGP</span
                     >
                     <span
-                      class="font-bebas leading-none font-bold"
-                      [class]="tc(b).text"
-                      style="font-size:1.3rem;letter-spacing:.04em"
+                      class="font-bebas leading-none font-bold text-slate-800"
+                      style="font-size:1.35rem;letter-spacing:.04em"
                     >
                       {{ b.pricePaid | number : '1.0-0' }}
                     </span>
@@ -496,8 +486,8 @@ function qrImgUrl(payload: string): string {
                 </div>
 
                 <button
-                  class="inline-flex items-center gap-1.5 px-2.5 py-1.5 rounded-lg
-                             text-[.7rem] font-bold border transition-all duration-150
+                  class="inline-flex items-center gap-1.5 px-3 py-2 rounded-lg
+                             text-[.73rem] font-bold border transition-all duration-150
                              active:scale-95 hover:shadow-md"
                   [class]="tc(b).bg + ' ' + tc(b).border + ' ' + tc(b).text"
                   [style.background]="tc(b).gradient"
@@ -507,7 +497,7 @@ function qrImgUrl(payload: string): string {
                     class="w-4 h-4"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="2"
+                    stroke-width="2.2"
                     viewBox="0 0 24 24"
                   >
                     <path
@@ -528,21 +518,21 @@ function qrImgUrl(payload: string): string {
           }
         </div>
 
-        <!-- Total spent -->
+        <!-- Total spent summary -->
         <div
-          class="mt-5 flex items-center justify-between px-4 py-3 rounded-xl
-                      bg-blue-500/8 border border-blue-400/35"
+          class="mt-6 flex items-center justify-between px-5 py-4 rounded-xl
+                      bg-blue-50 border border-blue-200"
         >
           <span
-            class="font-mono text-[.68rem] tracking-[.12em] uppercase text-slate-600 font-bold"
+            class="font-mono text-[.7rem] tracking-[.12em] uppercase text-slate-700 font-bold"
           >
             Total spent ({{ bookings().length }} ticket{{
               bookings().length !== 1 ? 's' : ''
             }})
           </span>
           <span
-            class="font-bebas text-blue-600 font-bold"
-            style="font-size:1.2rem;letter-spacing:.04em"
+            class="font-bebas text-blue-700 font-bold"
+            style="font-size:1.25rem;letter-spacing:.04em"
           >
             EGP {{ totalSpent() | number : '1.0-0' }}
           </span>

@@ -675,13 +675,14 @@ import {
             <!-- Right: greeting + CTA -->
             <div class="flex items-center gap-3 flex-wrap">
               @if (!loading()) {
-              <div
+              <!-- <div
+                class="text-gray"
                 style="font-family:var(--fm);font-size:.63rem;letter-spacing:.1em;text-transform:uppercase;
                         color:rgba(242,238,230,.28);padding:.48rem .9rem;border-radius:100px;
                         border:1px solid var(--border);background:rgba(242,238,230,.02)"
               >
                 {{ today | date : 'EEE, MMM d' }}
-              </div>
+              </div> -->
               }
               <button class="primary-btn" routerLink="/events">
                 <svg
@@ -1359,7 +1360,7 @@ import {
             <div class="flex flex-col gap-4">
               <!-- Category breakdown -->
               @if (topCategories().length > 0) {
-              <div class="panel page-enter" style="animation-delay:410ms">
+              <div class="panel page-enter" style="animation-delay:360ms">
                 <div class="panel-head">
                   <div>
                     <div class="section-label">◆ Breakdown</div>
@@ -1373,7 +1374,7 @@ import {
                   {
                   <div
                     class="page-enter"
-                    [style.animation-delay]="460 + i * 55 + 'ms'"
+                    [style.animation-delay]="410 + i * 55 + 'ms'"
                   >
                     <div class="flex items-center justify-between mb-1.5">
                       <span
@@ -1511,11 +1512,7 @@ export class DashboardHomeComponent implements OnInit {
   readonly today = new Date();
 
   // ── Config ───────────────────────────────────────────────────────────────
-  readonly tabs = [
-    { id: 'overview', label: 'Overview' },
-    { id: 'events', label: 'Events' },
-    { id: 'analytics', label: 'Analytics' },
-  ];
+  readonly tabs = [{ id: 'overview', label: 'Overview' }];
 
   readonly quickActions = [
     {

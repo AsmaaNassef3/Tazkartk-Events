@@ -97,29 +97,7 @@ interface CreateMeetupForm {
                 >Meetups</span
               >
             </div>
-            <button
-              class="inline-flex items-center gap-2 px-4 py-2 rounded-full text-[0.78rem] font-bold
-                             border border-blue-400/45 text-blue-700 bg-blue-500/12
-                             hover:bg-blue-500/20 transition-all duration-200 cursor-pointer
-                             whitespace-nowrap"
-              (click)="openCreateModal()"
-            >
-              <svg
-                width="14"
-                height="14"
-                fill="none"
-                stroke="currentColor"
-                stroke-width="2.5"
-                viewBox="0 0 24 24"
-              >
-                <path
-                  stroke-linecap="round"
-                  stroke-linejoin="round"
-                  d="M12 4.5v15m7.5-7.5h-15"
-                />
-              </svg>
-              Create Meetup
-            </button>
+           
           </div>
           <h1
             style="font-family:'Bebas Neue',sans-serif;font-size:clamp(2.8rem,11vw,7rem);line-height:.88;letter-spacing:.03em;color:var(--text-900);margin:0"
@@ -199,25 +177,47 @@ interface CreateMeetupForm {
 
         <!-- ── EMPTY ── -->
         @else if (filtered().length === 0) {
-        <div class="flex flex-col items-center gap-3 py-24 text-center">
-          <span class="text-5xl">🔍</span>
-          <p class="font-[Bebas_Neue,sans-serif] text-2xl tracking-wide">
-            No meetups here yet
-          </p>
-          <p class="text-sm text-[#1E3A5F]/60 font-light">
-            Try a different filter.
-          </p>
+        <div class="flex flex-col items-center gap-4 py-24 text-center">
+          <div
+            class="w-16 h-16 rounded-full bg-blue-50 flex items-center justify-center"
+          >
+            <svg
+              width="32"
+              height="32"
+              fill="none"
+              stroke="currentColor"
+              stroke-width="1.5"
+              viewBox="0 0 24 24"
+              class="text-blue-400"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803a7.5 7.5 0 0010.607 0z"
+              />
+            </svg>
+          </div>
+          <div>
+            <p
+              class="font-[Bebas_Neue,sans-serif] text-2xl tracking-wide text-slate-800 font-bold"
+            >
+              No meetups found
+            </p>
+            <p class="mt-2 text-sm text-slate-500 font-light">
+              Try adjusting your filters or create your own meetup!
+            </p>
+          </div>
         </div>
         }
 
         <!-- ── GRID ── -->
         @else {
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-5">
           @for (m of filtered(); track m.id; let i = $index) {
           <article
-            class="bg-white border border-[#E2E8F0] rounded-2xl overflow-hidden
-                       transition-all duration-200 hover:border-blue-300 hover:shadow-lg
-                       hover:-translate-y-0.5 card-in"
+            class="bg-white border border-[#E5E7EB] rounded-2xl overflow-hidden
+                       transition-all duration-250 hover:border-blue-300 hover:shadow-md
+                       hover:-translate-y-1 card-in"
             [style.animation-delay]="i * 45 + 'ms'"
           >
             <!-- Image -->
@@ -227,18 +227,18 @@ interface CreateMeetupForm {
                 [src]="m.meetup_img_url"
                 [alt]="m.title ?? ''"
                 loading="lazy"
-                class="w-full h-full object-cover transition-transform duration-500"
+                class="w-full h-full object-cover transition-transform duration-500 hover:scale-105"
               />
               } @else {
               <div class="w-full h-full flex items-center justify-center">
                 <svg
-                  width="32"
-                  height="32"
+                  width="40"
+                  height="40"
                   fill="none"
                   stroke="currentColor"
-                  stroke-width=".8"
+                  stroke-width=".7"
                   viewBox="0 0 24 24"
-                  class="opacity-15 text-[#1E3A5F]"
+                  class="opacity-20 text-[#0d2352]"
                 >
                   <path
                     stroke-linecap="round"
@@ -253,24 +253,26 @@ interface CreateMeetupForm {
 
               <!-- Location badge -->
               <span
-                class="absolute top-2.5 left-2.5 px-2.5 py-0.5 rounded-md
-                               font-[DM_Mono,monospace] text-[0.56rem] tracking-widest uppercase font-bold
-                               bg-white/70 backdrop-blur-sm border"
+                class="absolute top-3 left-3 px-3 py-1 rounded-lg
+                               font-[DM_Mono,monospace] text-[0.58rem] tracking-widest uppercase font-bold
+                               bg-white/85 backdrop-blur-sm border border-white/40"
                 [class]="
                   m.meetup_location_type === 1
-                    ? 'text-blue-600 border-blue-400/45'
-                    : 'text-slate-600 border-[#CBD5E1]'
+                    ? 'text-blue-700 bg-blue-50/90'
+                    : 'text-slate-700 bg-slate-50/90'
                 "
               >
-                {{ m.meetup_location_type === 1 ? 'Online' : 'In-Person' }}
+                {{
+                  m.meetup_location_type === 1 ? '🌐 Online' : '📍 In-Person'
+                }}
               </span>
 
               <!-- Upcoming pulse dot -->
               @if (isUpcoming(m.start_Time)) {
-              <span class="absolute top-2.5 right-2.5 flex h-2.5 w-2.5">
+              <span class="absolute top-3 right-3 flex h-2.5 w-2.5">
                 <span
                   class="animate-ping absolute inline-flex h-full w-full
-                                   rounded-full bg-blue-500 opacity-70"
+                                   rounded-full bg-blue-500 opacity-75"
                 ></span>
                 <span
                   class="relative inline-flex rounded-full h-2.5 w-2.5 bg-blue-500"
@@ -280,10 +282,10 @@ interface CreateMeetupForm {
             </div>
 
             <!-- Body -->
-            <div class="p-4 flex flex-col gap-2">
+            <div class="p-5 flex flex-col gap-3">
               @if (m.category?.name) {
               <div
-                class="font-[DM_Mono,monospace] text-[0.56rem] tracking-widest
+                class="font-[DM_Mono,monospace] text-[0.58rem] tracking-widest
                                 uppercase text-blue-600 font-bold"
               >
                 {{ m.category!.name }}
@@ -291,23 +293,23 @@ interface CreateMeetupForm {
               }
 
               <h2
-                class="font-[Bebas_Neue,sans-serif] text-lg leading-tight tracking-wide
+                class="font-[Bebas_Neue,sans-serif] text-lg leading-snug tracking-wide
                              text-[#0d2352] line-clamp-2 font-bold"
               >
                 {{ m.title }}
               </h2>
 
-              <div class="flex flex-col gap-1.5">
+              <div class="flex flex-col gap-2">
                 @if (m.start_Time) {
                 <div
-                  class="flex items-center gap-1.5 text-[0.7rem] text-slate-600 font-medium"
+                  class="flex items-center gap-2 text-[0.73rem] text-slate-700 font-medium"
                 >
                   <svg
-                    width="13"
-                    height="13"
+                    width="14"
+                    height="14"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="2"
+                    stroke-width="2.2"
                     viewBox="0 0 24 24"
                     class="shrink-0 text-blue-500"
                   >
@@ -321,14 +323,14 @@ interface CreateMeetupForm {
                 </div>
                 } @if (m.nameOfPlace || m.city) {
                 <div
-                  class="flex items-center gap-1.5 text-[0.7rem] text-slate-600 font-medium"
+                  class="flex items-center gap-2 text-[0.73rem] text-slate-700 font-medium"
                 >
                   <svg
-                    width="13"
-                    height="13"
+                    width="14"
+                    height="14"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="2"
+                    stroke-width="2.2"
                     viewBox="0 0 24 24"
                     class="shrink-0 text-green-500"
                   >
@@ -347,14 +349,14 @@ interface CreateMeetupForm {
                 </div>
                 } @if (m.manager?.firstName) {
                 <div
-                  class="flex items-center gap-1.5 text-[0.7rem] text-slate-500 font-medium"
+                  class="flex items-center gap-2 text-[0.73rem] text-slate-600 font-medium"
                 >
                   <svg
-                    width="13"
-                    height="13"
+                    width="14"
+                    height="14"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="2"
+                    stroke-width="2.2"
                     viewBox="0 0 24 24"
                     class="shrink-0 text-slate-400"
                   >
@@ -364,34 +366,39 @@ interface CreateMeetupForm {
                       d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z"
                     />
                   </svg>
-                  Hosted by {{ m.manager!.firstName }}
-                  {{ m.manager!.lastName ? ' ' + m.manager!.lastName : '' }}
+                  <span class="truncate"
+                    >{{ m.manager!.firstName }}
+                    {{
+                      m.manager!.lastName ? ' ' + m.manager!.lastName : ''
+                    }}</span
+                  >
                 </div>
                 }
               </div>
 
               <!-- Footer: attendee count + join button -->
-              <div class="flex items-center justify-between gap-2 mt-1">
+              <div
+                class="flex items-center justify-between gap-3 mt-auto pt-3 border-t border-slate-100"
+              >
                 <span
-                  class="font-[DM_Mono,monospace] text-[0.58rem] tracking-wide text-slate-500 font-medium"
+                  class="font-[DM_Mono,monospace] text-[0.6rem] tracking-wide text-slate-600 font-medium"
                 >
-                  {{ attendeeCount(m) }}
-                  {{ m.maxAttendees ? ' / ' + m.maxAttendees : '' }} joined
+                  {{ attendeeCount(m) }}/{{ m.maxAttendees || '∞' }}
                 </span>
 
                 <!-- Join / Already Joined / Full -->
                 @if (isJoined(m)) {
                 <span
-                  class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full
-                                   text-[0.73rem] font-bold
-                                   bg-blue-500/12 border border-blue-400/45 text-blue-700"
+                  class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full
+                                   text-[0.75rem] font-bold
+                                   bg-emerald-50 border border-emerald-200 text-emerald-700"
                 >
                   <svg
-                    width="10"
-                    height="10"
+                    width="12"
+                    height="12"
                     fill="none"
                     stroke="currentColor"
-                    stroke-width="3"
+                    stroke-width="2.5"
                     viewBox="0 0 24 24"
                   >
                     <path
@@ -400,30 +407,45 @@ interface CreateMeetupForm {
                       d="M5 13l4 4L19 7"
                     />
                   </svg>
-                  Already Joined
+                  Joined
                 </span>
                 } @else if (m.isFull) {
                 <span
-                  class="px-3 py-1.5 rounded-full text-[0.73rem] font-bold
-                                   border border-[#E2E8F0] text-slate-500"
+                  class="px-3.5 py-1.5 rounded-full text-[0.75rem] font-bold
+                                   border border-slate-300 text-slate-600 bg-slate-50"
                   >Full</span
                 >
                 } @else {
                 <button
-                  class="inline-flex items-center gap-1 px-3 py-1.5 rounded-full
-                               text-[0.73rem] font-bold
-                               border border-blue-400/45 text-blue-700 bg-blue-500/8
-                               hover:bg-blue-500/16 transition-colors duration-200
+                  class="inline-flex items-center gap-1.5 px-3.5 py-1.5 rounded-full
+                               text-[0.75rem] font-bold
+                               border border-blue-300 text-blue-700 bg-blue-50
+                               hover:bg-blue-100 hover:border-blue-400 transition-colors duration-200
                                disabled:opacity-50 disabled:cursor-not-allowed cursor-pointer"
                   [disabled]="joiningId() === m.id"
                   (click)="join(m)"
                 >
                   @if (joiningId() === m.id) {
                   <span
-                    class="w-3 h-3 rounded-full border-2 border-blue-400/40
+                    class="w-3 h-3 rounded-full border-2 border-blue-300/40
                                        border-t-blue-600 animate-spin inline-block"
                   ></span>
-                  } @else { + Join }
+                  } @else {
+                  <svg
+                    width="12"
+                    height="12"
+                    fill="none"
+                    stroke="currentColor"
+                    stroke-width="2.5"
+                    viewBox="0 0 24 24"
+                  >
+                    <path
+                      stroke-linecap="round"
+                      stroke-linejoin="round"
+                      d="M12 4.5v15m7.5-7.5h-15"
+                    />
+                  </svg>
+                  Join }
                 </button>
                 }
               </div>
@@ -916,7 +938,7 @@ export class MeetupsPage implements OnInit, OnDestroy {
         : new Date(this.createForm.start_Time).toISOString(),
       meetup_location_type: this.createForm.meetup_location_type,
       online_url: this.createForm.online_url || null,
-      maxAttendees: this.createForm.maxAttendees
+      max_Participants: this.createForm.maxAttendees
         ? Number(this.createForm.maxAttendees)
         : null,
       meetup_img_url: this.createForm.meetup_img_url || null,

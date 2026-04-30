@@ -304,102 +304,110 @@ type ActiveTab = 'joined' | 'pending' | 'browse';
     <!-- ── BROWSE TAB ── -->
     } @else if (activeTab()==='browse') {
       @if (filteredBrowseOrgs().length === 0) {
-        <div class="flex flex-col items-center justify-center py-20 text-center gap-4">
-          <svg class="w-9 h-9 text-slate-300" fill="none" stroke="currentColor"
-               stroke-width="1.5" viewBox="0 0 24 24">
-            <path stroke-linecap="round" stroke-linejoin="round"
-                  d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803a7.5 7.5 0 0010.607 0z"/>
-          </svg>
+        <div class="flex flex-col items-center justify-center py-24 text-center gap-4">
+          <div class="w-16 h-16 rounded-3xl bg-slate-100 flex items-center justify-center">
+            <svg class="w-8 h-8 text-slate-400" fill="none" stroke="currentColor"
+                 stroke-width="1.5" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round"
+                    d="M21 21l-5.197-5.197m0 0A7.5 7.5 0 105.196 15.803a7.5 7.5 0 0010.607 0z"/>
+            </svg>
+          </div>
           <div>
-            <p class="font-bebas text-xl tracking-wider text-slate-700">No organisations found</p>
+            <p class="font-bebas text-2xl tracking-wider text-slate-800">No organisations found</p>
             @if (searchQuery().trim()) {
-              <p class="mt-1 text-xs text-slate-500">Try a different search term.</p>
+              <p class="mt-2 text-sm text-slate-500 font-light max-w-xs">Try adjusting your search terms.</p>
             }
           </div>
         </div>
       } @else {
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-5">
           @for (org of filteredBrowseOrgs(); track org.id; let i = $index) {
-            <div class="org-card relative rounded-2xl overflow-hidden border border-[#E2E8F0]
-                        bg-[#F8FAFF] flex flex-col page-enter
-                        transition-all duration-300 hover:-translate-y-1
-                        hover:border-blue-400/25 hover:shadow-[0_20px_60px_rgba(37,99,235,.1)]"
-                 [style.animation-delay]="i*40+'ms'">
+            <div class="org-card relative rounded-2xl overflow-hidden border border-[#E0E7FF]
+                        bg-white flex flex-col page-enter
+                        transition-all duration-300 hover:-translate-y-2
+                        hover:border-blue-300 hover:shadow-[0_20px_60px_rgba(37,99,235,.12)]"
+                 [style.animation-delay]="i*45+'ms'">
 
               @if (busyId()===org.id) {
                 <div class="absolute inset-0 z-10 rounded-2xl flex items-center justify-center"
-                     style="background:rgba(248,250,255,.8);backdrop-filter:blur(4px)">
-                  <div class="spin w-6 h-6 rounded-full border-2 border-[#E2E8F0] border-t-[#2563EB]"></div>
+                     style="background:rgba(250,251,255,.85);backdrop-filter:blur(6px)">
+                  <div class="spin w-6 h-6 rounded-full border-2 border-[#E0E7FF] border-t-[#2563EB]"></div>
                 </div>
               }
 
-              <!-- Cover -->
-              <div class="relative h-[72px] shrink-0 overflow-hidden"
-                   style="background:linear-gradient(135deg,rgba(99,102,241,.15),rgba(165,180,252,.05))">
+              <!-- Cover with enhanced gradient -->
+              <div class="relative h-[85px] shrink-0 overflow-hidden"
+                   style="background:linear-gradient(135deg,rgba(37,99,235,.08),rgba(99,102,241,.06))">
                 @if (org.coverUrl) {
                   <img [src]="org.coverUrl" [alt]="org.name??''"
-                       class="w-full h-full object-cover opacity-70" (error)="onImgErr($event)"/>
+                       class="w-full h-full object-cover opacity-75" (error)="onImgErr($event)"/>
                 }
                 <div class="cover-fade absolute inset-0"></div>
               </div>
 
-              <!-- Body -->
-              <div class="px-4 pb-4 flex flex-col gap-3 flex-1">
+              <!-- Body with improved spacing -->
+              <div class="px-5 pb-5 flex flex-col gap-4 flex-1">
                 <!-- Logo + name -->
-                <div class="flex items-end gap-3">
-                  <div class="w-11 h-11 rounded-xl shrink-0 overflow-hidden border-2 border-[#F8FAFF]
-                              -mt-[22px] relative z-1 flex items-center justify-center"
+                <div class="flex items-end gap-3.5">
+                  <div class="w-12 h-12 rounded-2xl shrink-0 overflow-hidden border-2 border-white
+                              -mt-[26px] relative z-1 flex items-center justify-center shadow-sm"
                        [style]="getLogoStyle(org)">
                     @if (org.logoUrl) {
                       <img [src]="org.logoUrl" [alt]="org.name??''"
                            class="w-full h-full object-cover" (error)="onImgErr($event)"/>
                     } @else {
-                      <span class="font-bebas text-base text-white">{{ orgInitials(org) }}</span>
+                      <span class="font-bebas text-lg text-white font-bold">{{ orgInitials(org) }}</span>
                     }
                   </div>
                   <div class="flex-1 min-w-0">
-                    <p class="font-bebas text-base tracking-wide leading-tight truncate">
+                    <p class="font-bebas text-[1.05rem] tracking-wider leading-tight truncate text-[#0d2352]">
                       {{ org.name ?? 'Unnamed Org' }}
                     </p>
                     @if (org.city) {
-                      <p class="font-mono-dm text-[0.54rem] tracking-wider text-slate-400">
-                        {{ org.city }}{{ org.region ? ', '+org.region : '' }}
+                      <p class="font-mono-dm text-[0.55rem] tracking-wider text-slate-500 mt-0.5">
+                        📍 {{ org.city }}{{ org.region ? ', '+org.region : '' }}
                       </p>
                     }
                   </div>
                 </div>
 
                 @if (org.bio) {
-                  <p class="text-[0.78rem] text-slate-600 leading-relaxed line-clamp-2">{{ org.bio }}</p>
+                  <p class="text-[0.82rem] text-slate-600 leading-relaxed line-clamp-2 font-light">{{ org.bio }}</p>
                 }
 
                 <!-- Status badge -->
                 <div class="mt-auto">
                   @if (getMembershipStatus(org.id)===MS.Approved) {
-                    <span class="inline-flex items-center gap-1 px-2.5 py-[3px] rounded-full border
-                                 font-mono-dm text-[0.54rem] tracking-widest uppercase font-medium
-                                 bg-emerald-500/10 border-emerald-500/20 text-emerald-400">● Member</span>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border
+                                 font-mono-dm text-[0.55rem] tracking-widest uppercase font-semibold
+                                 bg-emerald-50 border-emerald-200 text-emerald-700">
+                      <span class="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>Member
+                    </span>
                   } @else if (getMembershipStatus(org.id)===MS.Pending) {
-                    <span class="inline-flex items-center gap-1 px-2.5 py-[3px] rounded-full border
-                                 font-mono-dm text-[0.54rem] tracking-widest uppercase font-medium
-                                 bg-amber-400/10 border-amber-400/25 text-amber-400">◎ Requested</span>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border
+                                 font-mono-dm text-[0.55rem] tracking-widest uppercase font-semibold
+                                 bg-amber-50 border-amber-200 text-amber-700">
+                      <span class="w-1.5 h-1.5 rounded-full bg-amber-500"></span>Requested
+                    </span>
                   } @else if (getMembershipStatus(org.id)===MS.Banned) {
-                    <span class="inline-flex items-center gap-1 px-2.5 py-[3px] rounded-full border
-                                 font-mono-dm text-[0.54rem] tracking-widest uppercase font-medium
-                                 bg-red-400/10 border-red-400/20 text-red-400">✕ Banned</span>
+                    <span class="inline-flex items-center gap-1.5 px-3 py-1.5 rounded-full border
+                                 font-mono-dm text-[0.55rem] tracking-widest uppercase font-semibold
+                                 bg-red-50 border-red-200 text-red-700">
+                      <span class="w-1.5 h-1.5 rounded-full bg-red-500"></span>Banned
+                    </span>
                   }
                 </div>
 
-                <!-- CTA -->
-                <div class="flex gap-2">
+                <!-- CTA Button -->
+                <div class="flex gap-2.5 pt-2">
                   @if (getMembershipStatus(org.id)===null) {
                     <button (click)="join(org)" [disabled]="busyId()!==null"
-                            class="flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3
-                                   rounded-xl font-mono-dm text-[0.6rem] tracking-wider uppercase font-medium
-                                   bg-blue-50 text-blue-600 border border-blue-200
-                                   hover:bg-blue-100 disabled:opacity-35 disabled:cursor-not-allowed
-                                   transition-all duration-150 cursor-pointer">
-                      <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
+                            class="flex-1 flex items-center justify-center gap-2 py-2.5 px-4
+                                   rounded-xl font-mono-dm text-[0.62rem] tracking-wider uppercase font-bold
+                                   bg-blue-500 text-white border border-blue-600 
+                                   hover:bg-blue-600 hover:shadow-lg disabled:opacity-50 disabled:cursor-not-allowed
+                                   transition-all duration-200 cursor-pointer">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2.5" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 4.5v15m7.5-7.5h-15"/>
                       </svg>
                       Join
@@ -407,24 +415,24 @@ type ActiveTab = 'joined' | 'pending' | 'browse';
 
                   } @else if (getMembershipStatus(org.id)===MS.Pending) {
                     <button disabled
-                            class="flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3
-                                   rounded-xl font-mono-dm text-[0.6rem] tracking-wider uppercase font-medium
-                                   bg-amber-400/6 text-amber-400/50 border border-amber-400/12 cursor-default">
-                      <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            class="flex-1 flex items-center justify-center gap-2 py-2.5 px-4
+                                   rounded-xl font-mono-dm text-[0.62rem] tracking-wider uppercase font-bold
+                                   bg-amber-50 text-amber-600 border border-amber-200 cursor-default">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M12 6v6h4.5m4.5 0a9 9 0 11-18 0 9 9 0 0118 0z"/>
                       </svg>
-                      Pending…
+                      Pending
                     </button>
 
                   } @else if (getMembershipStatus(org.id)===MS.Approved) {
                     <button (click)="leave(org.id, org.name??'this org')" [disabled]="busyId()!==null"
-                            class="flex-1 flex items-center justify-center gap-1.5 py-2.5 px-3
-                                   rounded-xl font-mono-dm text-[0.6rem] tracking-wider uppercase font-medium
-                                   bg-slate-100 text-slate-600 border border-slate-200
-                                   hover:bg-red-50 hover:text-red-600 hover:border-red-200
-                                   disabled:opacity-35 disabled:cursor-not-allowed
-                                   transition-all duration-150 cursor-pointer">
-                      <svg class="w-3 h-3" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
+                            class="flex-1 flex items-center justify-center gap-2 py-2.5 px-4
+                                   rounded-xl font-mono-dm text-[0.62rem] tracking-wider uppercase font-bold
+                                   bg-slate-100 text-slate-700 border border-slate-300
+                                   hover:bg-red-50 hover:text-red-700 hover:border-red-300
+                                   disabled:opacity-50 disabled:cursor-not-allowed
+                                   transition-all duration-200 cursor-pointer">
+                      <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" stroke-width="2" viewBox="0 0 24 24">
                         <path stroke-linecap="round" stroke-linejoin="round" d="M15.75 9V5.25A2.25 2.25 0 0013.5 3h-6a2.25 2.25 0 00-2.25 2.25v13.5A2.25 2.25 0 007.5 21h6a2.25 2.25 0 002.25-2.25V15m3 0l3-3m0 0l-3-3m3 3H9"/>
                       </svg>
                       Leave

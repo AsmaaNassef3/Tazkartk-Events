@@ -1,10 +1,4 @@
 // src/app/features/user-dashboard/my-created-meetups/my-created-meetups.ts
-//
-// Shows meetups the logged-in user has created — with Edit & Delete actions.
-// GET    /api/Meetup/createdmeetupsbyuser/{userId}
-// PUT    /api/Meetup/{id}
-// DELETE /api/Meetup/{id}
-//
 import {
   Component,
   inject,
@@ -18,13 +12,18 @@ import { FormsModule } from '@angular/forms';
 import { Router } from '@angular/router';
 import { Subject, of } from 'rxjs';
 import { catchError, takeUntil } from 'rxjs/operators';
+
 import { MeetupService } from '@core/services/meetup.service';
 import { AuthService } from '@core/services/auth.service';
+import { CategoryService, Category } from '@core/services/category';
 import {
   Meetup,
   MeetupLocationType,
+  CreateMeetupDto,
   UpdateMeetupDto,
 } from '@core/models/meetup.model';
+
+// ── helpers ───────────────────────────────────────────────────────────────────
 
 function fmtDate(iso?: string | null): string {
   if (!iso) return '—';
@@ -49,7 +48,6 @@ function attendeeCount(m: Meetup): number {
   if (m.currentAttendees !== undefined) return m.currentAttendees;
   return (m.participants ?? []).length;
 }
-/** Converts an ISO string to the value a datetime-local <input> expects. */
 function toDatetimeLocal(iso: string): string {
   if (!iso) return '';
   const d = new Date(iso);
@@ -59,9 +57,9 @@ function toDatetimeLocal(iso: string): string {
   )}:${pad(d.getMinutes())}`;
 }
 
-type TabFilter = 'all' | 'upcoming' | 'past';
+// ── Shared form shape (used by both Create and Edit) ──────────────────────────
 
-interface EditForm {
+interface MeetupForm {
   title: string;
   description: string;
   start_Time: string;
@@ -74,8 +72,27 @@ interface EditForm {
   online_url: string;
   meetup_img_url: string;
   meetup_location_type: MeetupLocationType;
-  categoryId: number;
+  categoryId: number | null;
 }
+
+const blankForm = (): MeetupForm => ({
+  title: '',
+  description: '',
+  start_Time: '',
+  end_Time: '',
+  maxAttendees: '',
+  city: '',
+  region: '',
+  street: '',
+  nameOfPlace: '',
+  online_url: '',
+  meetup_img_url: '',
+  meetup_location_type: MeetupLocationType.Offline,
+  categoryId: null,
+});
+
+type TabFilter = 'all' | 'upcoming' | 'past';
+type ModalMode = 'create' | 'edit';
 
 @Component({
   selector: 'app-my-created-meetups',
@@ -101,10 +118,32 @@ interface EditForm {
             >
             }
           </div>
-          <h1 class="mc-title">
-            My <em class="mc-accent">Created</em> Meetups
-          </h1>
-          <p class="mc-sub">Meetups you've organised and published.</p>
+          <div class="mc-hero__row">
+            <div>
+              <h1 class="mc-title">
+                My <em class="mc-accent">Created</em> Meetups
+              </h1>
+              <p class="mc-sub">Meetups you've organised and published.</p>
+            </div>
+            <!-- ── NEW MEETUP BUTTON ── -->
+            <button class="mc-new-btn" (click)="openCreate()">
+              <svg
+                width="13"
+                height="13"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.8"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 4v16m8-8H4"
+                />
+              </svg>
+              New Meetup
+            </button>
+          </div>
         </div>
       </header>
 
@@ -165,12 +204,7 @@ interface EditForm {
         <p class="mc-empty__sub">
           Start organising your own community gathering.
         </p>
-        <button
-          class="mc-btn"
-          (click)="router.navigate(['/user-dashboard/meetups/create'])"
-        >
-          Create a Meetup
-        </button>
+        <button class="mc-btn" (click)="openCreate()">Create a Meetup</button>
       </div>
       }
 
@@ -190,7 +224,6 @@ interface EditForm {
           [class.mc-card--past]="!isUpcoming(m.start_Time)"
           [style.animation-delay]="i * 50 + 'ms'"
         >
-          <!-- Image strip -->
           @if (m.meetup_img_url) {
           <div class="mc-card__img-wrap">
             <img
@@ -205,7 +238,6 @@ interface EditForm {
 
           <div class="mc-card__body">
             <div class="mc-card__left">
-              <!-- Badges -->
               <div class="mc-badges">
                 @if (m.category?.name) {
                 <span class="mc-badge mc-badge--cat">{{
@@ -244,15 +276,12 @@ interface EditForm {
                 </span>
               </div>
 
-              <!-- Title -->
               <h3 class="mc-card__title">{{ m.title }}</h3>
 
-              <!-- Description -->
               @if (m.description) {
               <p class="mc-card__desc">{{ m.description }}</p>
               }
 
-              <!-- Meta -->
               <div class="mc-card__meta-list">
                 @if (m.start_Time) {
                 <div class="mc-card__meta">
@@ -348,13 +377,11 @@ interface EditForm {
               <span class="mc-status-pill mc-status-pill--open">Open</span>
               }
 
-              <!-- ── Action buttons ── -->
               <div class="mc-actions">
                 <button
                   class="mc-action-btn mc-action-btn--edit"
                   [disabled]="deletingId() === m.id"
                   (click)="openEdit(m)"
-                  title="Edit meetup"
                 >
                   <svg
                     width="13"
@@ -367,8 +394,7 @@ interface EditForm {
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5
-                                 m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
+                      d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z"
                     />
                   </svg>
                   Edit
@@ -377,7 +403,6 @@ interface EditForm {
                   class="mc-action-btn mc-action-btn--delete"
                   [disabled]="deletingId() === m.id"
                   (click)="confirmDelete(m)"
-                  title="Delete meetup"
                 >
                   @if (deletingId() === m.id) {
                   <span class="mc-spinner"></span>
@@ -393,8 +418,7 @@ interface EditForm {
                     <path
                       stroke-linecap="round"
                       stroke-linejoin="round"
-                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6
-                                   m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
+                      d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"
                     />
                   </svg>
                   Delete }
@@ -434,8 +458,8 @@ interface EditForm {
             (click)="executeDelete()"
           >
             @if (deletingId() !== null) {
-            <span class="mc-spinner mc-spinner--light"></span>
-            } @else { Delete }
+            <span class="mc-spinner mc-spinner--light"></span> } @else { Delete
+            }
           </button>
         </div>
       </div>
@@ -443,14 +467,28 @@ interface EditForm {
     }
 
     <!-- ════════════════════════════════════════════════
-         EDIT MODAL
+         CREATE / EDIT MODAL  (shared UI, different mode)
     ════════════════════════════════════════════════ -->
-    @if (editTarget()) {
-    <div class="mc-overlay" (click)="cancelEdit()">
-      <div class="mc-modal mc-modal--wide" (click)="$event.stopPropagation()">
+    @if (modalOpen()) {
+    <div class="mc-overlay" (click)="closeModal()">
+      <div
+        class="mc-modal mc-modal--wide"
+        (click)="$event.stopPropagation()"
+        role="dialog"
+        [attr.aria-label]="
+          modalMode() === 'create' ? 'Create Meetup' : 'Edit Meetup'
+        "
+      >
+        <!-- Header -->
         <div class="mc-modal__header">
-          <h2 class="mc-modal__title">Edit Meetup</h2>
-          <button class="mc-modal__close" (click)="cancelEdit()">
+          <h2 class="mc-modal__title">
+            {{ modalMode() === 'create' ? 'New Meetup' : 'Edit Meetup' }}
+          </h2>
+          <button
+            class="mc-modal__close"
+            (click)="closeModal()"
+            aria-label="Close"
+          >
             <svg
               width="16"
               height="16"
@@ -468,14 +506,15 @@ interface EditForm {
           </button>
         </div>
 
+        <!-- Form body -->
         <div class="mc-form">
           <!-- Title -->
           <label class="mc-label"
             >Title *
             <input
               class="mc-input"
-              [(ngModel)]="editForm.title"
-              placeholder="Meetup title"
+              [(ngModel)]="form.title"
+              placeholder="e.g. Cairo JS Monthly"
             />
           </label>
 
@@ -484,7 +523,7 @@ interface EditForm {
             >Description
             <textarea
               class="mc-input mc-textarea"
-              [(ngModel)]="editForm.description"
+              [(ngModel)]="form.description"
               placeholder="What's this meetup about?"
               rows="3"
             ></textarea>
@@ -497,7 +536,8 @@ interface EditForm {
               <input
                 class="mc-input"
                 type="datetime-local"
-                [(ngModel)]="editForm.start_Time"
+                [(ngModel)]="form.start_Time"
+                style="color-scheme:dark"
               />
             </label>
             <label class="mc-label"
@@ -505,113 +545,179 @@ interface EditForm {
               <input
                 class="mc-input"
                 type="datetime-local"
-                [(ngModel)]="editForm.end_Time"
+                [(ngModel)]="form.end_Time"
+                style="color-scheme:dark"
               />
             </label>
           </div>
 
           <!-- Location type -->
           <label class="mc-label"
-            >Location type
-            <select
-              class="mc-input mc-select"
-              [(ngModel)]="editForm.meetup_location_type"
-            >
-              <option [ngValue]="0">In-Person</option>
-              <option [ngValue]="1">Online</option>
-            </select>
+            >Location type *
+            <div class="mc-type-btns">
+              <button
+                type="button"
+                (click)="form.meetup_location_type = 0"
+                [class.mc-type-btn--on]="form.meetup_location_type === 0"
+                class="mc-type-btn"
+              >
+                <svg
+                  width="13"
+                  height="13"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M17.657 16.657L13.414 20.9a1.998 1.998 0 01-2.827 0l-4.244-4.243a8 8 0 1111.314 0zM15 11a3 3 0 11-6 0 3 3 0 016 0z"
+                  />
+                </svg>
+                In-Person
+              </button>
+              <button
+                type="button"
+                (click)="form.meetup_location_type = 1"
+                [class.mc-type-btn--on]="form.meetup_location_type === 1"
+                class="mc-type-btn"
+              >
+                <svg
+                  width="13"
+                  height="13"
+                  fill="none"
+                  stroke="currentColor"
+                  stroke-width="2"
+                  viewBox="0 0 24 24"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M9.75 17L9 20l-1 1h8l-1-1-.75-3M3 13h18M5 17h14a2 2 0 002-2V5a2 2 0 00-2-2H5a2 2 0 00-2 2v10a2 2 0 002 2z"
+                  />
+                </svg>
+                Online
+              </button>
+            </div>
           </label>
 
-          @if (editForm.meetup_location_type === 1) {
-          <label class="mc-label"
-            >Online URL
-            <input
-              class="mc-input"
-              [(ngModel)]="editForm.online_url"
-              placeholder="https://meet.google.com/..."
-            />
-          </label>
-          } @else {
-          <div class="mc-row">
-            <label class="mc-label"
-              >City
-              <input
-                class="mc-input"
-                [(ngModel)]="editForm.city"
-                placeholder="Cairo"
-              />
-            </label>
-            <label class="mc-label"
-              >Region
-              <input
-                class="mc-input"
-                [(ngModel)]="editForm.region"
-                placeholder="Cairo Governorate"
-              />
-            </label>
-          </div>
+          <!-- In-person location fields -->
+          @if (form.meetup_location_type === 0) {
           <div class="mc-row">
             <label class="mc-label"
               >Venue name
               <input
                 class="mc-input"
-                [(ngModel)]="editForm.nameOfPlace"
+                [(ngModel)]="form.nameOfPlace"
                 placeholder="Tech Hub Cairo"
+              />
+            </label>
+            <label class="mc-label"
+              >City
+              <input
+                class="mc-input"
+                [(ngModel)]="form.city"
+                placeholder="Cairo"
+              />
+            </label>
+          </div>
+          <div class="mc-row">
+            <label class="mc-label"
+              >Region
+              <input
+                class="mc-input"
+                [(ngModel)]="form.region"
+                placeholder="Cairo Governorate"
               />
             </label>
             <label class="mc-label"
               >Street
               <input
                 class="mc-input"
-                [(ngModel)]="editForm.street"
+                [(ngModel)]="form.street"
                 placeholder="123 Tahrir Square"
               />
             </label>
           </div>
           }
 
-          <!-- Max attendees + image -->
+          <!-- Online URL -->
+          @if (form.meetup_location_type === 1) {
+          <label class="mc-label"
+            >Meeting URL
+            <input
+              class="mc-input"
+              [(ngModel)]="form.online_url"
+              placeholder="https://meet.google.com/..."
+            />
+          </label>
+          }
+
+          <!-- Category + max attendees -->
           <div class="mc-row">
+            <label class="mc-label"
+              >Category * @if (catsLoading()) {
+              <div class="mc-input mc-input--skel"></div>
+              } @else if (catsError()) {
+              <button class="mc-input mc-input--err" (click)="loadCategories()">
+                Failed to load — tap to retry
+              </button>
+              } @else {
+              <select class="mc-input mc-select" [(ngModel)]="form.categoryId">
+                <option [ngValue]="null" disabled>Select category…</option>
+                @for (c of categories(); track c.id) {
+                <option [ngValue]="c.id" class="bg-[#111116]">
+                  {{ c.name }}
+                </option>
+                }
+              </select>
+              }
+            </label>
             <label class="mc-label"
               >Max attendees
               <input
                 class="mc-input"
                 type="number"
                 min="1"
-                [(ngModel)]="editForm.maxAttendees"
+                [(ngModel)]="form.maxAttendees"
                 placeholder="Unlimited"
               />
             </label>
-            <label class="mc-label"
-              >Image URL
-              <input
-                class="mc-input"
-                [(ngModel)]="editForm.meetup_img_url"
-                placeholder="https://…"
-              />
-            </label>
           </div>
-        </div>
 
-        @if (editError()) {
-        <p class="mc-form-error">{{ editError() }}</p>
+          <!-- Cover image -->
+          <label class="mc-label"
+            >Cover image URL
+            <input
+              class="mc-input"
+              [(ngModel)]="form.meetup_img_url"
+              placeholder="https://example.com/image.jpg"
+            />
+          </label>
+        </div>
+        <!-- /mc-form -->
+
+        @if (formError()) {
+        <p class="mc-form-error">{{ formError() }}</p>
         }
 
+        <!-- Footer -->
         <div class="mc-modal__footer">
           <button
             class="mc-modal-btn mc-modal-btn--cancel"
-            (click)="cancelEdit()"
+            (click)="closeModal()"
           >
             Cancel
           </button>
           <button
             class="mc-modal-btn mc-modal-btn--save"
             [disabled]="saving()"
-            (click)="saveEdit()"
+            (click)="submitForm()"
           >
-            @if (saving()) {
-            <span class="mc-spinner mc-spinner--dark"></span>
-            } @else { Save changes }
+            @if (saving()) { <span class="mc-spinner mc-spinner--dark"></span> }
+            @else {
+            {{ modalMode() === 'create' ? 'Create Meetup' : 'Save Changes' }} }
           </button>
         </div>
       </div>
@@ -633,20 +739,35 @@ interface EditForm {
   styles: [
     `
       :host {
+        /* ── Light Mode Design System Tokens ── */
+        --primary: #2563eb;
+        --primary-dim: rgba(37, 99, 235, 0.08);
+        --primary-brd: rgba(37, 99, 235, 0.22);
         --gold: #f59e0b;
-        --coral: #2563eb;
-        --green: #22c55e;
+        --gold-dim: rgba(245, 158, 11, 0.1);
+        --gold-brd: rgba(245, 158, 11, 0.25);
+        --green: #10b981;
+        --green-dim: rgba(16, 185, 129, 0.1);
+        --green-brd: rgba(16, 185, 129, 0.25);
+        --coral: #ef4444;
+        --coral-dim: rgba(239, 68, 68, 0.09);
+        --coral-brd: rgba(239, 68, 68, 0.25);
         --bg: #ffffff;
         --bg2: #f8faff;
         --bg3: #eef2ff;
-        --bg4: #e8eeff;
+        --bg4: #e8efff;
         --text: #1e3a5f;
         --muted: #64748b;
+        --subtle: #94a3b8;
         --bdr: #e2e8f0;
         --bdrhi: #cbd5e1;
+        --shadow-xs: rgba(30, 58, 95, 0.04);
+        --shadow-sm: rgba(30, 58, 95, 0.07);
+        --shadow-md: rgba(30, 58, 95, 0.12);
+        --shadow-lg: rgba(30, 58, 95, 0.18);
         font-family: 'Plus Jakarta Sans', sans-serif;
         display: block;
-        background: var(--bg2);
+        background: var(--bg);
         color: var(--text);
         min-height: 100%;
       }
@@ -676,6 +797,13 @@ interface EditForm {
         position: relative;
         z-index: 1;
       }
+      .mc-hero__row {
+        display: flex;
+        align-items: flex-start;
+        justify-content: space-between;
+        gap: 1rem;
+        flex-wrap: wrap;
+      }
       .mc-eyebrow {
         display: flex;
         gap: 0.5rem;
@@ -690,9 +818,9 @@ interface EditForm {
         font-size: 0.59rem;
         letter-spacing: 0.12em;
         text-transform: uppercase;
-        background: rgba(34, 197, 94, 0.08);
-        border: 1px solid rgba(34, 197, 94, 0.2);
-        color: #16a34a;
+        background: rgba(37, 99, 235, 0.08);
+        border: 1px solid rgba(37, 99, 235, 0.22);
+        color: var(--primary);
       }
       .mc-tag--dim {
         background: rgba(30, 58, 95, 0.05);
@@ -719,6 +847,29 @@ interface EditForm {
         line-height: 1.6;
       }
 
+      /* ── New meetup button ── */
+      .mc-new-btn {
+        display: inline-flex;
+        align-items: center;
+        gap: 0.45rem;
+        padding: 0.55rem 1.2rem;
+        border-radius: 12px;
+        border: none;
+        cursor: pointer;
+        background: var(--primary);
+        color: #ffffff;
+        font-family: inherit;
+        font-weight: 700;
+        font-size: 0.84rem;
+        transition: opacity 0.2s, transform 0.2s;
+        flex-shrink: 0;
+        margin-top: 0.25rem;
+      }
+      .mc-new-btn:hover {
+        opacity: 0.88;
+        transform: translateY(-1px);
+      }
+
       /* ── Tabs ── */
       .mc-tabs-wrap {
         display: flex;
@@ -729,7 +880,7 @@ interface EditForm {
       .mc-tab {
         padding: 0.38rem 0.9rem;
         border-radius: 100px;
-        background: var(--bg);
+        background: var(--bg3);
         border: 1px solid var(--bdr);
         color: var(--muted);
         font-size: 0.8rem;
@@ -743,8 +894,8 @@ interface EditForm {
       }
       .mc-tab--on {
         background: rgba(37, 99, 235, 0.08);
-        border-color: rgba(37, 99, 235, 0.3) !important;
-        color: var(--coral) !important;
+        border-color: rgba(37, 99, 235, 0.25) !important;
+        color: var(--primary) !important;
         font-weight: 700;
       }
 
@@ -777,10 +928,10 @@ interface EditForm {
       }
       .mc-card:hover {
         border-color: var(--bdrhi);
-        box-shadow: 0 8px 24px rgba(30, 58, 95, 0.1);
+        box-shadow: var(--shadow-lg);
       }
       .mc-card--past {
-        opacity: 0.65;
+        opacity: 0.72;
       }
       .mc-card--past:hover {
         opacity: 1;
@@ -801,7 +952,7 @@ interface EditForm {
         inset: 0;
         background: linear-gradient(
           to top,
-          rgba(255, 255, 255, 0.9) 0%,
+          rgba(30, 58, 95, 0.25) 0%,
           transparent 60%
         );
       }
@@ -836,39 +987,39 @@ interface EditForm {
         font-size: 0.58rem;
         letter-spacing: 0.08em;
         text-transform: uppercase;
-        background: rgba(242, 238, 230, 0.06);
+        background: rgba(37, 99, 235, 0.06);
         border: 1px solid var(--bdr);
         color: var(--muted);
       }
       .mc-badge--cat {
-        color: #16a34a;
-        background: rgba(34, 197, 94, 0.08);
-        border-color: rgba(34, 197, 94, 0.2);
+        color: var(--green);
+        background: rgba(16, 185, 129, 0.08);
+        border-color: rgba(16, 185, 129, 0.22);
       }
       .mc-badge--online {
-        color: #0284c7;
-        background: rgba(14, 165, 233, 0.08);
-        border-color: rgba(14, 165, 233, 0.2);
+        color: var(--primary);
+        background: rgba(37, 99, 235, 0.08);
+        border-color: rgba(37, 99, 235, 0.22);
       }
       .mc-badge--upcoming {
-        color: #16a34a;
-        background: rgba(34, 197, 94, 0.08);
-        border-color: rgba(34, 197, 94, 0.2);
+        color: var(--green);
+        background: rgba(16, 185, 129, 0.08);
+        border-color: rgba(16, 185, 129, 0.22);
       }
       .mc-badge--past-badge {
         color: var(--muted);
         opacity: 0.7;
       }
       .mc-badge--owner {
-        color: var(--gold);
-        background: rgba(245, 158, 11, 0.08);
-        border-color: rgba(245, 158, 11, 0.25);
+        color: var(--primary);
+        background: rgba(37, 99, 235, 0.08);
+        border-color: rgba(37, 99, 235, 0.22);
       }
       .mc-dot {
         width: 6px;
         height: 6px;
         border-radius: 50%;
-        background: #16a34a;
+        background: var(--green);
         animation: pulse 1.4s ease-in-out infinite;
       }
       @keyframes pulse {
@@ -893,7 +1044,7 @@ interface EditForm {
       }
       .mc-card__desc {
         font-size: 0.76rem;
-        color: var(--muted);
+        color: var(--subtle);
         line-height: 1.55;
         margin: 0;
         display: -webkit-box;
@@ -911,15 +1062,17 @@ interface EditForm {
         align-items: center;
         gap: 0.4rem;
         font-size: 0.72rem;
-        color: var(--muted);
+        color: var(--subtle);
       }
       .mc-card__meta svg {
         flex-shrink: 0;
-        opacity: 0.6;
+        opacity: 0.7;
+        color: var(--muted);
       }
       .mc-card__link {
-        color: #0ea5e9;
+        color: var(--primary);
         text-decoration: none;
+        font-weight: 600;
       }
       .mc-card__link:hover {
         text-decoration: underline;
@@ -947,12 +1100,12 @@ interface EditForm {
         font-family: 'Bebas Neue', sans-serif;
         font-size: 1.4rem;
         letter-spacing: 0.04em;
-        color: var(--gold);
+        color: var(--primary);
         line-height: 1;
       }
       .mc-stat__max {
         font-size: 0.7rem;
-        color: var(--muted);
+        color: var(--subtle);
       }
       .mc-stat__label {
         width: 100%;
@@ -961,20 +1114,20 @@ interface EditForm {
         font-size: 0.56rem;
         letter-spacing: 0.1em;
         text-transform: uppercase;
-        color: var(--muted);
+        color: var(--subtle);
       }
 
       .mc-bar-wrap {
         width: 80px;
         height: 4px;
         border-radius: 2px;
-        background: rgba(226, 232, 240, 0.5);
+        background: var(--bg3);
         overflow: hidden;
       }
       .mc-bar-fill {
         height: 100%;
         border-radius: 2px;
-        background: var(--gold);
+        background: var(--primary);
         transition: width 0.4s ease;
       }
       .mc-bar-fill--full {
@@ -992,17 +1145,16 @@ interface EditForm {
         text-transform: uppercase;
       }
       .mc-status-pill--open {
-        background: rgba(34, 197, 94, 0.08);
-        border: 1px solid rgba(34, 197, 94, 0.25);
-        color: #16a34a;
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.22);
+        color: var(--green);
       }
       .mc-status-pill--full {
-        background: rgba(37, 99, 235, 0.06);
-        border: 1px solid rgba(37, 99, 235, 0.18);
+        background: rgba(239, 68, 68, 0.09);
+        border: 1px solid rgba(239, 68, 68, 0.25);
         color: var(--coral);
       }
 
-      /* ── Action buttons ── */
       .mc-actions {
         display: flex;
         flex-direction: column;
@@ -1024,24 +1176,24 @@ interface EditForm {
         transition: background 0.18s, opacity 0.18s;
       }
       .mc-action-btn:disabled {
-        opacity: 0.4;
+        opacity: 0.5;
         cursor: not-allowed;
       }
       .mc-action-btn--edit {
         background: rgba(37, 99, 235, 0.08);
-        border-color: rgba(37, 99, 235, 0.25);
-        color: var(--coral);
+        border-color: rgba(37, 99, 235, 0.22);
+        color: var(--primary);
       }
       .mc-action-btn--edit:hover:not(:disabled) {
         background: rgba(37, 99, 235, 0.16);
       }
       .mc-action-btn--delete {
-        background: rgba(239, 68, 68, 0.06);
-        border-color: rgba(239, 68, 68, 0.18);
-        color: #dc2626;
+        background: rgba(239, 68, 68, 0.09);
+        border-color: rgba(239, 68, 68, 0.22);
+        color: var(--coral);
       }
       .mc-action-btn--delete:hover:not(:disabled) {
-        background: rgba(255, 68, 51, 0.15);
+        background: rgba(239, 68, 68, 0.15);
       }
 
       /* ── Skeleton ── */
@@ -1050,9 +1202,9 @@ interface EditForm {
         border-radius: 16px;
         background: linear-gradient(
           90deg,
-          #eef2ff 25%,
-          #e8eeff 50%,
-          #eef2ff 75%
+          rgba(30, 58, 95, 0.04) 25%,
+          rgba(30, 58, 95, 0.08) 50%,
+          rgba(30, 58, 95, 0.04) 75%
         );
         background-size: 600px 100%;
         animation: shimmer 1.5s ease-in-out infinite;
@@ -1087,6 +1239,7 @@ interface EditForm {
         display: flex;
         align-items: center;
         justify-content: center;
+        color: var(--muted);
       }
       .mc-empty__ico {
         font-size: 2.5rem;
@@ -1100,19 +1253,23 @@ interface EditForm {
       }
       .mc-empty__sub {
         font-size: 0.84rem;
-        color: var(--muted);
+        color: var(--subtle);
         margin: 0;
         font-weight: 300;
       }
       .mc-btn {
         padding: 0.6rem 1.5rem;
         border-radius: 10px;
-        background: var(--coral);
-        color: #fff;
+        background: var(--primary);
+        color: #ffffff;
         border: none;
         font-weight: 700;
         font-size: 0.85rem;
         cursor: pointer;
+        transition: opacity 0.2s;
+      }
+      .mc-btn:hover {
+        opacity: 0.88;
       }
 
       /* ── Overlay ── */
@@ -1139,13 +1296,14 @@ interface EditForm {
 
       /* ── Modal ── */
       .mc-modal {
-        background: var(--bg2);
-        border: 1px solid var(--bdrhi);
+        background: var(--bg);
+        border: 1px solid var(--bdr);
         border-radius: 20px;
         padding: 1.75rem;
         width: 100%;
         max-width: 420px;
         animation: slideUp 0.3s cubic-bezier(0.22, 1, 0.36, 1);
+        box-shadow: var(--shadow-lg);
       }
       .mc-modal--wide {
         max-width: 640px;
@@ -1162,15 +1320,13 @@ interface EditForm {
         font-family: 'Bebas Neue', sans-serif;
         font-size: 1.6rem;
         letter-spacing: 0.04em;
-        margin: 0 0 0.6rem;
-      }
-      .mc-modal--wide .mc-modal__title {
         margin: 0;
+        color: var(--text);
       }
       .mc-modal__close {
         background: none;
         border: none;
-        color: var(--muted);
+        color: var(--subtle);
         cursor: pointer;
         padding: 0.25rem;
         border-radius: 6px;
@@ -1181,7 +1337,7 @@ interface EditForm {
       }
       .mc-modal__body {
         font-size: 0.88rem;
-        color: var(--muted);
+        color: var(--subtle);
         line-height: 1.6;
         margin-bottom: 1.5rem;
       }
@@ -1210,24 +1366,25 @@ interface EditForm {
       }
       .mc-modal-btn--cancel {
         background: transparent;
-        border-color: var(--bdrhi);
-        color: var(--muted);
+        border-color: var(--bdr);
+        color: var(--subtle);
       }
       .mc-modal-btn--cancel:hover {
+        border-color: var(--bdrhi);
         color: var(--text);
       }
       .mc-modal-btn--confirm {
-        background: rgba(255, 68, 51, 0.12);
-        border-color: rgba(255, 68, 51, 0.3);
+        background: rgba(239, 68, 68, 0.09);
+        border-color: rgba(239, 68, 68, 0.22);
         color: var(--coral);
       }
       .mc-modal-btn--confirm:hover:not(:disabled) {
-        background: rgba(255, 68, 51, 0.22);
+        background: rgba(239, 68, 68, 0.15);
       }
       .mc-modal-btn--save {
-        background: var(--gold);
-        border-color: var(--gold);
-        color: #3d2800;
+        background: var(--primary);
+        border-color: var(--primary);
+        color: #ffffff;
       }
       .mc-modal-btn--save:hover:not(:disabled) {
         opacity: 0.88;
@@ -1245,10 +1402,10 @@ interface EditForm {
         gap: 0.35rem;
         font-size: 0.78rem;
         font-weight: 600;
-        color: var(--muted);
+        color: var(--text);
       }
       .mc-input {
-        background: var(--bg3);
+        background: var(--bg2);
         border: 1px solid var(--bdr);
         border-radius: 10px;
         color: var(--text);
@@ -1261,7 +1418,26 @@ interface EditForm {
         box-sizing: border-box;
       }
       .mc-input:focus {
-        border-color: rgba(240, 180, 41, 0.4);
+        border-color: rgba(37, 99, 235, 0.4);
+        background: var(--bg);
+      }
+      .mc-input--skel {
+        height: 38px;
+        background: linear-gradient(
+          90deg,
+          rgba(30, 58, 95, 0.04) 25%,
+          rgba(30, 58, 95, 0.08) 50%,
+          rgba(30, 58, 95, 0.04) 75%
+        );
+        background-size: 400px 100%;
+        animation: shimmer 1.5s ease-in-out infinite;
+      }
+      .mc-input--err {
+        color: var(--coral);
+        border-color: rgba(239, 68, 68, 0.3);
+        background: rgba(239, 68, 68, 0.06);
+        cursor: pointer;
+        text-align: left;
       }
       .mc-textarea {
         resize: vertical;
@@ -1270,6 +1446,11 @@ interface EditForm {
       .mc-select {
         appearance: none;
         cursor: pointer;
+        background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%231E3A5F' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='M2 5l6 6 6-6'/%3e%3c/svg%3e");
+        background-repeat: no-repeat;
+        background-position: right 0.75rem center;
+        background-size: 16px;
+        padding-right: 2.5rem;
       }
       .mc-row {
         display: grid;
@@ -1282,23 +1463,56 @@ interface EditForm {
         margin: 0.25rem 0 0;
       }
 
+      /* ── Location type toggle ── */
+      .mc-type-btns {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 0.5rem;
+        margin-top: 0.1rem;
+      }
+      .mc-type-btn {
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.4rem;
+        padding: 0.55rem 0.75rem;
+        border-radius: 10px;
+        border: 1px solid var(--bdr);
+        background: var(--bg2);
+        color: var(--subtle);
+        font-size: 0.8rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.18s;
+      }
+      .mc-type-btn:hover {
+        border-color: var(--bdrhi);
+        color: var(--text);
+        background: var(--bg3);
+      }
+      .mc-type-btn--on {
+        background: rgba(37, 99, 235, 0.08);
+        border-color: rgba(37, 99, 235, 0.25);
+        color: var(--primary);
+      }
+
       /* ── Spinner ── */
       .mc-spinner {
         display: inline-block;
         width: 13px;
         height: 13px;
         border-radius: 50%;
-        border: 2px solid rgba(255, 68, 51, 0.3);
-        border-top-color: var(--coral);
+        border: 2px solid rgba(37, 99, 235, 0.25);
+        border-top-color: var(--primary);
         animation: spin 0.7s linear infinite;
       }
       .mc-spinner--light {
-        border-color: rgba(61, 40, 0, 0.25);
-        border-top-color: #3d2800;
+        border-color: rgba(37, 99, 235, 0.15);
+        border-top-color: var(--primary);
       }
       .mc-spinner--dark {
-        border-color: rgba(61, 40, 0, 0.25);
-        border-top-color: #3d2800;
+        border-color: rgba(37, 99, 235, 0.15);
+        border-top-color: var(--primary);
       }
       @keyframes spin {
         to {
@@ -1318,14 +1532,14 @@ interface EditForm {
         font-weight: 600;
         white-space: nowrap;
         z-index: 200;
-        background: rgba(34, 197, 94, 0.12);
-        border: 1px solid rgba(34, 197, 94, 0.3);
+        background: rgba(16, 185, 129, 0.1);
+        border: 1px solid rgba(16, 185, 129, 0.25);
         color: var(--green);
         animation: toastIn 0.3s cubic-bezier(0.22, 1, 0.36, 1);
       }
       .mc-toast--error {
-        background: rgba(255, 68, 51, 0.12);
-        border-color: rgba(255, 68, 51, 0.3);
+        background: rgba(239, 68, 68, 0.09);
+        border-color: rgba(239, 68, 68, 0.25);
         color: var(--coral);
       }
       @keyframes toastIn {
@@ -1350,6 +1564,9 @@ interface EditForm {
         .mc-row {
           grid-template-columns: 1fr;
         }
+        .mc-hero__row {
+          flex-direction: column;
+        }
       }
     `,
   ],
@@ -1358,21 +1575,34 @@ export class MyCreatedMeetupsPage implements OnInit, OnDestroy {
   readonly router = inject(Router);
   private readonly svc = inject(MeetupService);
   private readonly auth = inject(AuthService);
+  private readonly catSvc = inject(CategoryService);
   private readonly d$ = new Subject<void>();
 
+  // ── List state ────────────────────────────────────────────────────────────
   meetups = signal<Meetup[]>([]);
   loading = signal(true);
   error = signal(false);
   activeTab = signal<TabFilter>('all');
-  deletingId = signal<number | null>(null);
-  saving = signal(false);
-  editError = signal<string | null>(null);
+
+  // ── Delete state ──────────────────────────────────────────────────────────
   deleteTarget = signal<Meetup | null>(null);
-  editTarget = signal<Meetup | null>(null);
+  deletingId = signal<number | null>(null);
+
+  // ── Shared modal state ────────────────────────────────────────────────────
+  modalOpen = signal(false);
+  modalMode = signal<ModalMode>('create');
+  editTarget = signal<Meetup | null>(null); // null when creating
+  form: MeetupForm = blankForm();
+  saving = signal(false);
+  formError = signal<string | null>(null);
+
+  // ── Category state ────────────────────────────────────────────────────────
+  categories = signal<Category[]>([]);
+  catsLoading = signal(false);
+  catsError = signal(false);
+
+  // ── Toast ─────────────────────────────────────────────────────────────────
   toast = signal<{ msg: string; type: 'success' | 'error' } | null>(null);
-
-  editForm: EditForm = this.blankForm();
-
   private toastTimer: ReturnType<typeof setTimeout> | null = null;
 
   readonly skeletons = Array.from({ length: 3 }, (_, i) => i);
@@ -1388,8 +1618,8 @@ export class MyCreatedMeetupsPage implements OnInit, OnDestroy {
   ];
 
   filtered = computed(() => {
-    const t = this.activeTab();
-    const list = this.meetups();
+    const t = this.activeTab(),
+      list = this.meetups();
     if (t === 'upcoming') return list.filter((m) => isUpcoming(m.start_Time));
     if (t === 'past') return list.filter((m) => !isUpcoming(m.start_Time));
     return list;
@@ -1408,6 +1638,8 @@ export class MyCreatedMeetupsPage implements OnInit, OnDestroy {
     this.d$.complete();
     if (this.toastTimer) clearTimeout(this.toastTimer);
   }
+
+  // ── Load ──────────────────────────────────────────────────────────────────
 
   load() {
     const userId = this.auth.getUserProfile()?.id;
@@ -1439,30 +1671,45 @@ export class MyCreatedMeetupsPage implements OnInit, OnDestroy {
       });
   }
 
-  // ── Delete flow ───────────────────────────────────────────────────────────
-
-  confirmDelete(m: Meetup): void {
-    this.deleteTarget.set(m);
+  loadCategories() {
+    if (this.categories().length) return; // already loaded
+    this.catsLoading.set(true);
+    this.catsError.set(false);
+    this.catSvc
+      .getAllCategories()
+      .pipe(
+        catchError(() => {
+          this.catsError.set(true);
+          this.catsLoading.set(false);
+          return of([] as Category[]);
+        }),
+        takeUntil(this.d$)
+      )
+      .subscribe((cats) => {
+        this.categories.set(cats);
+        this.catsLoading.set(false);
+      });
   }
 
-  cancelDelete(): void {
+  // ── Delete ────────────────────────────────────────────────────────────────
+
+  confirmDelete(m: Meetup) {
+    this.deleteTarget.set(m);
+  }
+  cancelDelete() {
     this.deleteTarget.set(null);
   }
 
-  executeDelete(): void {
+  executeDelete() {
     const m = this.deleteTarget();
     if (!m) return;
-
     this.deletingId.set(m.id);
 
     this.svc
       .deleteMeetup(m.id)
       .pipe(
         catchError((err) => {
-          this.showToast(
-            err?.error?.message ?? 'Failed to delete. Please try again.',
-            'error'
-          );
+          this.showToast(err?.error?.message ?? 'Failed to delete.', 'error');
           this.deletingId.set(null);
           this.deleteTarget.set(null);
           return of(null);
@@ -1478,10 +1725,19 @@ export class MyCreatedMeetupsPage implements OnInit, OnDestroy {
       });
   }
 
-  // ── Edit flow ─────────────────────────────────────────────────────────────
+  // ── Modal: open / close ───────────────────────────────────────────────────
 
-  openEdit(m: Meetup): void {
-    this.editForm = {
+  openCreate() {
+    this.form = blankForm();
+    this.formError.set(null);
+    this.editTarget.set(null);
+    this.modalMode.set('create');
+    this.modalOpen.set(true);
+    this.loadCategories();
+  }
+
+  openEdit(m: Meetup) {
+    this.form = {
       title: m.title ?? '',
       description: m.description ?? '',
       start_Time: toDatetimeLocal(m.start_Time),
@@ -1494,114 +1750,161 @@ export class MyCreatedMeetupsPage implements OnInit, OnDestroy {
       online_url: m.online_url ?? '',
       meetup_img_url: m.meetup_img_url ?? '',
       meetup_location_type: m.meetup_location_type,
-      categoryId: m.categoryId,
+      categoryId: m.categoryId ?? null,
     };
-    this.editError.set(null);
+    this.formError.set(null);
     this.editTarget.set(m);
+    this.modalMode.set('edit');
+    this.modalOpen.set(true);
+    this.loadCategories();
   }
 
-  cancelEdit(): void {
+  closeModal() {
+    if (this.saving()) return;
+    this.modalOpen.set(false);
     this.editTarget.set(null);
   }
 
-  saveEdit(): void {
-    const m = this.editTarget();
-    if (!m) return;
+  // ── Modal: submit ─────────────────────────────────────────────────────────
 
-    if (!this.editForm.title.trim()) {
-      this.editError.set('Title is required.');
+  submitForm() {
+    // ── Validation ──
+    if (!this.form.title.trim()) {
+      this.formError.set('Title is required.');
       return;
     }
-    if (!this.editForm.start_Time || !this.editForm.end_Time) {
-      this.editError.set('Start and end times are required.');
+    if (!this.form.start_Time) {
+      this.formError.set('Start date/time is required.');
+      return;
+    }
+    if (!this.form.end_Time) {
+      this.formError.set('End date/time is required.');
+      return;
+    }
+    if (!this.form.categoryId) {
+      this.formError.set('Please select a category.');
       return;
     }
 
-    const dto: UpdateMeetupDto = {
-      title: this.editForm.title.trim(),
-      description: this.editForm.description || null,
-      start_Time: new Date(this.editForm.start_Time).toISOString(),
-      end_Time: new Date(this.editForm.end_Time).toISOString(),
-      maxAttendees: this.editForm.maxAttendees
-        ? Number(this.editForm.maxAttendees)
-        : null,
-      city: this.editForm.city || null,
-      region: this.editForm.region || null,
-      street: this.editForm.street || null,
-      nameOfPlace: this.editForm.nameOfPlace || null,
-      online_url: this.editForm.online_url || null,
-      meetup_img_url: this.editForm.meetup_img_url || null,
-      meetup_location_type: this.editForm.meetup_location_type,
-      categoryId: this.editForm.categoryId,
-      managerId: m.managerId,
-    };
+    const userId = this.auth.getUserProfile()?.id;
+    if (!userId) {
+      this.formError.set('Session expired — please log in again.');
+      return;
+    }
 
+    this.formError.set(null);
     this.saving.set(true);
-    this.editError.set(null);
 
-    this.svc
-      .updateMeetup(m.id, dto)
-      .pipe(
-        catchError((err) => {
-          this.editError.set(
-            err?.error?.message ?? 'Failed to save. Please try again.'
-          );
+    const maxAtt = this.form.maxAttendees
+      ? parseInt(this.form.maxAttendees, 10) || null
+      : null;
+
+    // ── CREATE ──────────────────────────────────────────────────────────────
+    if (this.modalMode() === 'create') {
+      const dto: CreateMeetupDto = {
+        title: this.form.title.trim(),
+        start_Time: new Date(this.form.start_Time).toISOString(),
+        end_Time: new Date(this.form.end_Time).toISOString(),
+        max_Participants: maxAtt,
+        description: this.form.description.trim() || null,
+        city: this.form.city.trim() || null,
+        region: this.form.region.trim() || null,
+        street: this.form.street.trim() || null,
+        nameOfPlace: this.form.nameOfPlace.trim() || null,
+        online_url: this.form.online_url.trim() || null,
+        meetup_img_url: this.form.meetup_img_url.trim() || null,
+        meetup_location_type: this.form.meetup_location_type,
+        categoryId: this.form.categoryId!,
+        managerId: userId,
+      };
+
+      this.svc
+        .createMeetup(dto)
+        .pipe(
+          catchError((err) => {
+            this.formError.set(
+              err?.error?.message ?? 'Failed to create meetup.'
+            );
+            this.saving.set(false);
+            return of(null);
+          }),
+          takeUntil(this.d$)
+        )
+        .subscribe((res) => {
+          if (!res) return;
           this.saving.set(false);
-          return of(null);
-        }),
-        takeUntil(this.d$)
-      )
-      .subscribe((res) => {
-        if (!res) return;
+          this.modalOpen.set(false);
+          this.showToast('Meetup created! 🎉', 'success');
+          this.load(); // refresh list from server
+        });
 
-        // Patch the meetup in-place so the list updates without a full reload
-        this.meetups.update((list) =>
-          list.map((x) =>
-            x.id !== m.id
-              ? x
-              : {
-                  ...x,
-                  title: dto.title,
-                  description: dto.description ?? null,
-                  start_Time: dto.start_Time,
-                  end_Time: dto.end_Time,
-                  maxAttendees: dto.maxAttendees ?? null,
-                  city: dto.city ?? null,
-                  region: dto.region ?? null,
-                  street: dto.street ?? null,
-                  nameOfPlace: dto.nameOfPlace ?? null,
-                  online_url: dto.online_url ?? null,
-                  meetup_img_url: dto.meetup_img_url ?? null,
-                  meetup_location_type: dto.meetup_location_type,
-                }
-          )
-        );
+      // ── EDIT ────────────────────────────────────────────────────────────────
+    } else {
+      const m = this.editTarget()!;
+      const dto: UpdateMeetupDto = {
+        title: this.form.title.trim(),
+        start_Time: new Date(this.form.start_Time).toISOString(),
+        end_Time: new Date(this.form.end_Time).toISOString(),
+        maxAttendees: maxAtt,
+        description: this.form.description.trim() || null,
+        city: this.form.city.trim() || null,
+        region: this.form.region.trim() || null,
+        street: this.form.street.trim() || null,
+        nameOfPlace: this.form.nameOfPlace.trim() || null,
+        online_url: this.form.online_url.trim() || null,
+        meetup_img_url: this.form.meetup_img_url.trim() || null,
+        meetup_location_type: this.form.meetup_location_type,
+        categoryId: this.form.categoryId!,
+        managerId: m.managerId,
+      };
 
-        this.saving.set(false);
-        this.editTarget.set(null);
-        this.showToast(`"${dto.title}" updated successfully! ✏️`, 'success');
-      });
+      this.svc
+        .updateMeetup(m.id, dto)
+        .pipe(
+          catchError((err) => {
+            this.formError.set(
+              err?.error?.message ?? 'Failed to save changes.'
+            );
+            this.saving.set(false);
+            return of(null);
+          }),
+          takeUntil(this.d$)
+        )
+        .subscribe((res) => {
+          if (!res) return;
+
+          // Patch the local list in-place (no extra HTTP call)
+          this.meetups.update((list) =>
+            list.map((x) =>
+              x.id !== m.id
+                ? x
+                : {
+                    ...x,
+                    title: dto.title,
+                    description: dto.description ?? null,
+                    start_Time: dto.start_Time,
+                    end_Time: dto.end_Time,
+                    maxAttendees: dto.maxAttendees ?? null,
+                    city: dto.city ?? null,
+                    region: dto.region ?? null,
+                    street: dto.street ?? null,
+                    nameOfPlace: dto.nameOfPlace ?? null,
+                    online_url: dto.online_url ?? null,
+                    meetup_img_url: dto.meetup_img_url ?? null,
+                    meetup_location_type: dto.meetup_location_type,
+                  }
+            )
+          );
+
+          this.saving.set(false);
+          this.modalOpen.set(false);
+          this.editTarget.set(null);
+          this.showToast(`"${dto.title}" updated ✏️`, 'success');
+        });
+    }
   }
 
-  // ── Helpers ───────────────────────────────────────────────────────────────
-
-  private blankForm(): EditForm {
-    return {
-      title: '',
-      description: '',
-      start_Time: '',
-      end_Time: '',
-      maxAttendees: '',
-      city: '',
-      region: '',
-      street: '',
-      nameOfPlace: '',
-      online_url: '',
-      meetup_img_url: '',
-      meetup_location_type: MeetupLocationType.Offline,
-      categoryId: 0,
-    };
-  }
+  // ── Toast helper ──────────────────────────────────────────────────────────
 
   private showToast(msg: string, type: 'success' | 'error') {
     this.toast.set({ msg, type });
