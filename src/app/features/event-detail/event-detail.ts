@@ -488,6 +488,31 @@ interface TierGroup {
             </button>
             }
 
+            <!-- ══ BUY TICKET BUTTON ══ -->
+            @if (!bookingSuccess()) {
+            <button
+              class="ed-buy-btn"
+              [disabled]="!selectedTicketId() || booking()"
+              (click)="navigateToBuyTicket()"
+            >
+              <svg
+                width="15"
+                height="15"
+                fill="none"
+                stroke="currentColor"
+                stroke-width="2.5"
+                viewBox="0 0 24 24"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12 8c-1.657 0-3 .895-3 2s1.343 2 3 2 3 .895 3 2-1.343 2-3 2m0-8c1.11 0 2.08.402 2.599 1M12 8V7m0 1v8m0 0v1m0-1c-1.11 0-2.08-.402-2.599-1M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
+              </svg>
+              Buy Ticket
+            </button>
+            }
+
             <!-- ══ BOOKING SUCCESS + FLOW B ══ -->
             @if (bookingSuccess()) {
             <div class="ed-success">
@@ -1056,6 +1081,49 @@ interface TierGroup {
         display: inline-block;
       }
 
+      /* Buy Ticket Button */
+      .ed-buy-btn {
+        width: 100%;
+        padding: 0.9rem;
+        border-radius: 12px;
+        border: 1.5px solid var(--coral);
+        background: transparent;
+        color: var(--coral);
+        font-family: 'Plus Jakarta Sans', sans-serif;
+        font-weight: 700;
+        font-size: 0.9rem;
+        cursor: pointer;
+        transition: all 0.25s;
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 0.5rem;
+        position: relative;
+        overflow: hidden;
+      }
+      .ed-buy-btn::before {
+        content: '';
+        position: absolute;
+        inset: 0;
+        background: linear-gradient(
+          135deg,
+          rgba(37, 99, 235, 0.08) 0%,
+          transparent 55%
+        );
+        pointer-events: none;
+      }
+      .ed-buy-btn:hover:not(:disabled) {
+        background: rgba(37, 99, 235, 0.08);
+        border-color: var(--coral);
+        box-shadow: 0 4px 16px rgba(37, 99, 235, 0.2);
+        transform: translateY(-1px);
+      }
+      .ed-buy-btn:disabled {
+        opacity: 0.35;
+        cursor: not-allowed;
+        transform: none;
+      }
+
       /* Success (booking confirmed) */
       .ed-success {
         display: flex;
@@ -1383,6 +1451,12 @@ export class EventDetail implements OnInit, OnDestroy {
 
   isSoldOut(t: EventTicket) {
     return t.soldQuantity >= t.totalQuantity;
+  }
+
+  navigateToBuyTicket() {
+    this.router.navigate(['/user-dashboard/payment'], {
+      queryParams: { ticketId: this.selectedTicketId() },
+    });
   }
 
   goBack() {

@@ -306,7 +306,7 @@ const CHIP_TXT = [
               >
               }
             </div>
-            <h2 class="udh-spotlight__title">{{ spotlight()!.title }}</h2>
+            <h2 class="text-white udh-spotlight__title">{{ spotlight()!.title }}</h2>
             <button
               class="udh-spotlight__btn"
               (click)="open(spotlight()!); $event.stopPropagation()"
@@ -963,7 +963,7 @@ const CHIP_TXT = [
         font-size: clamp(1.7rem, 4vw, 2.6rem);
         letter-spacing: 0.03em;
         line-height: 0.95;
-        color: var(--text);
+        color: white;
         margin: 0;
       }
       .udh-spotlight__btn {
