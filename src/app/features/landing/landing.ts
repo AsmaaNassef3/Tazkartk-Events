@@ -127,7 +127,8 @@ interface Step {
               aria-label="SOUNDSTORM Giza Edition event card"
             >
               <img
-                src="https://images.pexels.com/photos/1105666/pexels-photo-1105666.jpeg?auto=compress&cs=tinysrgb&w=900"
+                src="https://scontent.fcai19-12.fna.fbcdn.net/v/t39.30808-6/684837755_122175214472870319_3024010841963783471_n.jpg?stp=dst-jpg_p180x540_tt6&_nc_cat=110&ccb=1-7&_nc_sid=13d280&_nc_ohc=_u7PA_7pvn4Q7kNvwG4ujWJ&_nc_oc=AdoMCUazvVzkVpj1H0DjdWGwzZ6LzOPKHu4gtPCuWIbtCA7FEC2iTNuKVxdcI9rnOcM&_nc_zt=23&_nc_ht=scontent.fcai19-12.fna&_nc_gid=6CpdN-0Ld2JnNzHROhU5LA&_nc_ss=7b2a8&oh=00_Af45t7-SZSmuYkNTSvawgnlbwN_uJuLtZzF90sT5D1ZC_Q&oe=69FAED9B
+"
                 alt="Large crowd at an outdoor concert"
                 class="es-hero__card-img"
                 width="420"
@@ -162,7 +163,7 @@ interface Step {
             >
               <div class="es-float__avatars" aria-hidden="true">
                 <img
-                  src="https://i.pravatar.cc/32?img=1"
+                  src="https://scontent.fcai19-12.fna.fbcdn.net/v/t39.30808-6/687883040_122175225932870319_4452896161658994103_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=13d280&_nc_ohc=K-raiz_QSqwQ7kNvwHzWxmI&_nc_oc=AdqWYySi_JPj61S5DAeYftaN0eHE5BExaVX0h-AmLy4prcCnUALH6LLhhlw2mcN1w_U&_nc_zt=23&_nc_ht=scontent.fcai19-12.fna&_nc_gid=rjBv-e0y-B2fVT3Cc9eOjw&_nc_ss=7b2a8&oh=00_Af4NKMv71tYIYAYcMOTiiBhxScu1PgQxQsX89BOwKhV1Hg&oe=69FB292B"
                   alt=""
                   width="26"
                   height="26"
@@ -312,7 +313,7 @@ interface Step {
             >
               <div class="es-bento__img-wrap">
                 <img
-                  src="https://images.pexels.com/photos/169198/pexels-photo-169198.jpeg?auto=compress&cs=tinysrgb&w=1200"
+                  src="https://scontent.fcai19-12.fna.fbcdn.net/v/t39.30808-6/687883040_122175225932870319_4452896161658994103_n.jpg?_nc_cat=100&ccb=1-7&_nc_sid=13d280&_nc_ohc=K-raiz_QSqwQ7kNvwHzWxmI&_nc_oc=AdqWYySi_JPj61S5DAeYftaN0eHE5BExaVX0h-AmLy4prcCnUALH6LLhhlw2mcN1w_U&_nc_zt=23&_nc_ht=scontent.fcai19-12.fna&_nc_gid=rjBv-e0y-B2fVT3Cc9eOjw&_nc_ss=7b2a8&oh=00_Af4NKMv71tYIYAYcMOTiiBhxScu1PgQxQsX89BOwKhV1Hg&oe=69FB292B"
                   alt="Outdoor concert"
                   class="es-bento__img"
                   width="800"
@@ -354,7 +355,7 @@ interface Step {
             >
               <div class="es-bento__img-wrap">
                 <img
-                  src="https://images.pexels.com/photos/2774556/pexels-photo-2774556.jpeg?auto=compress&cs=tinysrgb&w=900"
+                  src="https://scontent.fcai19-12.fna.fbcdn.net/v/t39.30808-6/686476554_122175226016870319_5800956943979614239_n.jpg?_nc_cat=106&ccb=1-7&_nc_sid=13d280&_nc_ohc=nLHnxfEdCLEQ7kNvwHFbk3P&_nc_oc=AdrbjA0hTHzI_8AC4ljygP3NXaR4pVjG7KHKu5GtCLLw_N4RE6aVlZcQ-iILDJ-7O0I&_nc_zt=23&_nc_ht=scontent.fcai19-12.fna&_nc_gid=8XJIp0Lvr8sCeFjNpaj5BQ&_nc_ss=7b2a8&oh=00_Af4r2dlpp2bibzE1NbIYZX3ZGNxSClKUnLCybjF9JPSPkA&oe=69FB01F9"
                   alt="Desert landscape"
                   class="es-bento__img"
                   width="600"
@@ -388,7 +389,7 @@ interface Step {
             >
               <div class="es-bento__img-wrap">
                 <img
-                  src="https://images.pexels.com/photos/1181400/pexels-photo-1181400.jpeg?auto=compress&cs=tinysrgb&w=900"
+                  src="https://scontent.fcai19-12.fna.fbcdn.net/v/t39.30808-6/688232814_122175226154870319_1937452165330490891_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=13d280&_nc_ohc=2-fLqa_KOCkQ7kNvwEQFaqt&_nc_oc=Adq1adEcdOxgnA4VwhA1NcbF7hCyqjYZBiX0l8WlPyHinqf0hOhrUjMQ2Rc8z_aTQ_4&_nc_zt=23&_nc_ht=scontent.fcai19-12.fna&_nc_gid=owDYKdQ6UleQlOhZxSS2LQ&_nc_ss=7b2a8&oh=00_Af7F31DxVFkT2nXD8LX3pTxE9UDR9itKxkizjpZboVX7oQ&oe=69FB09BA"
                   alt="Business conference"
                   class="es-bento__img"
                   width="600"
@@ -422,7 +423,7 @@ interface Step {
             >
               <div class="es-bento__img-wrap">
                 <img
-                  src="https://images.pexels.com/photos/1190297/pexels-photo-1190297.jpeg?auto=compress&cs=tinysrgb&w=1200"
+                  src="https://scontent.fcai19-12.fna.fbcdn.net/v/t39.30808-6/686947224_122175225974870319_4814257799920510167_n.jpg?_nc_cat=105&ccb=1-7&_nc_sid=13d280&_nc_ohc=SBArf6CA6rQQ7kNvwHToAiF&_nc_oc=Adoktkuy3MnkJrZktXVQdNX1RiyuRNkZMjSW1S7UdGJ2F1A8AaFYjGNd279pD3fVwlU&_nc_zt=23&_nc_ht=scontent.fcai19-12.fna&_nc_gid=e0U0yh44K69h-B7bdHTseQ&_nc_ss=7b2a8&oh=00_Af4o0jgFmJ8m2lNgvjRcOcDSGYTFXn875BhIgPPvcM2wew&oe=69FB26E6"
                   alt="Jazz musician"
                   class="es-bento__img"
                   width="800"
@@ -486,7 +487,7 @@ interface Step {
               width="390"
               height="490"
               alt="Tahrir Square tour"
-              src="https://images.pexels.com/photos/1692693/pexels-photo-1692693.jpeg?auto=compress&cs=tinysrgb&w=800"
+              src="https://scontent.fcai19-1.fna.fbcdn.net/v/t39.30808-6/686947204_122175226226870319_2296982080489033740_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=13d280&_nc_ohc=BJeKMhtgSqYQ7kNvwFfBfEQ&_nc_oc=AdpYkA0PiPqj7J6wPMxd4Z4O0K84ufkcAeeduiV7nJeSq349aN30hL1s30JADDIyYW0&_nc_zt=23&_nc_ht=scontent.fcai19-1.fna&_nc_gid=-z_Sm7Ha4-xHKgvYEkFCrg&_nc_ss=7b2a8&oh=00_Af7XJl46fSDBLMyGgIEt18lk-ebRVBFWsPC2BtK2VYOsGQ&oe=69FB1BDC"
               class="es-nearby__img"
             />
             <img
@@ -496,7 +497,7 @@ interface Step {
               width="390"
               height="490"
               alt="Rooftop jazz"
-              src="https://images.pexels.com/photos/248797/pexels-photo-248797.jpeg?auto=compress&cs=tinysrgb&w=800"
+              src="https://scontent.fcai19-1.fna.fbcdn.net/v/t39.30808-6/686913626_122175226334870319_624926926030917623_n.jpg?_nc_cat=109&ccb=1-7&_nc_sid=13d280&_nc_ohc=Lkeo0rVQVrsQ7kNvwEwu94D&_nc_oc=AdobDrJbGLaF9BdlWhFfz6hVgtELJz5nS6voAZTQY3cNnUO5ctMnQ9rahMnd-44SPxc&_nc_zt=23&_nc_ht=scontent.fcai19-1.fna&_nc_gid=kWmd_S1CKzOYu7ChiokL7A&_nc_ss=7b2a8&oh=00_Af66MHjdNTrEJpNzGXl7KCbAhER7s2a0C6yLcG6DraODtQ&oe=69FAFF99"
               class="es-nearby__img"
             />
             <img
@@ -506,7 +507,7 @@ interface Step {
               width="390"
               height="490"
               alt="Khan el-Khalili"
-              src="https://images.pexels.com/photos/460672/pexels-photo-460672.jpeg?auto=compress&cs=tinysrgb&w=800"
+              src="https://scontent.fcai19-12.fna.fbcdn.net/v/t39.30808-6/688402608_122175226376870319_9025487228636813368_n.jpg?_nc_cat=110&ccb=1-7&_nc_sid=13d280&_nc_ohc=DlpdozeUVWMQ7kNvwGnevlU&_nc_oc=Adq39ZD_-zXGo6IOwS1j9VPqv-btX2HDRG-C9bMxiesuMy3fe9V_vqeqQ61ufRMLJdw&_nc_zt=23&_nc_ht=scontent.fcai19-12.fna&_nc_gid=rStder27oaIAfY0sjz4-mA&_nc_ss=7b2a8&oh=00_Af6sPb1rqu-9-K_klfy0yBK_Mgqqzs338qupPdaUI7Vsfw&oe=69FB2E29"
               class="es-nearby__img"
             />
             <img
@@ -516,7 +517,7 @@ interface Step {
               width="390"
               height="490"
               alt="Old Cairo food"
-              src="https://images.pexels.com/photos/460740/pexels-photo-460740.jpeg?auto=compress&cs=tinysrgb&w=800"
+              src="https://scontent.fcai19-12.fna.fbcdn.net/v/t39.30808-6/686107326_122175226268870319_8768544702418316743_n.jpg?stp=cp6_dst-jpg_tt6&_nc_cat=104&ccb=1-7&_nc_sid=13d280&_nc_ohc=pIqKNoMjVXcQ7kNvwG5HP7q&_nc_oc=AdpefL56gxJmWD5QUOfSmjnX3yDfKfHCQCNO1VDW6vvNlrJn7r75gF6Y62g1qg5hrQc&_nc_zt=23&_nc_ht=scontent.fcai19-12.fna&_nc_gid=1Zf1tO35Kr0vmJGyTelzrA&_nc_ss=7b2a8&oh=00_Af7k0dPsQ7Ikh44-LqDL3em601d07xyGbB_Lx1gmT2PYUg&oe=69FB09C2"
               class="es-nearby__img"
             />
             <img
@@ -526,7 +527,7 @@ interface Step {
               width="390"
               height="490"
               alt="Nile felucca"
-              src="https://images.pexels.com/photos/1190297/pexels-photo-1190297.jpeg?auto=compress&cs=tinysrgb&w=800"
+              src="https://scontent.fcai19-12.fna.fbcdn.net/v/t39.30808-6/686488519_122175226442870319_8445941764207991956_n.jpg?_nc_cat=104&ccb=1-7&_nc_sid=13d280&_nc_ohc=MCIiZEd8nQwQ7kNvwEb76Zg&_nc_oc=AdruxkeSXA29kCJoGV3g9UO_RLjngIQpFC-ORzSTkU2ToBvz6s_FKcmuxv9N80RaOnE&_nc_zt=23&_nc_ht=scontent.fcai19-12.fna&_nc_gid=kOZJaezLgt0wRLmPZ9jUgA&_nc_ss=7b2a8&oh=00_Af6qfalm20_EzpBjl_F63OaJXSX25CJ71oEewcunonuPDg&oe=69FB1C50"
               class="es-nearby__img"
             />
             <div class="es-nearby__overlay">
